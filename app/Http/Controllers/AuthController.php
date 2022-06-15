@@ -6,8 +6,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Traits\ResponseTrait;
 use App\Models\Admin;
+use App\Models\Skill;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
@@ -21,7 +23,6 @@ class AuthController extends Controller
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:5',
             'confirm_password' => 'required|string|min:5|same:password',
-            'type' => 'required|integer|max:1',
         ]);
 
         if ($validator->fails()) {
@@ -31,9 +32,8 @@ class AuthController extends Controller
                 'first_name' => $request->first_name,
                 'last_name' => $request->last_name,
                 'email' => $request->email,
-                'password' => $request->password,
-                'confirm_password' => $request->confirm_password,
-                'type' => $request->type,
+                'password' => Hash::make($request->password),
+                'type' => 0,
             ]);
 
             config(['auth.guards.user-api.provider' => 'user']);
@@ -80,9 +80,72 @@ class AuthController extends Controller
         }
     }
 
+    public function account(Request $request)
+    {
+        $validator = Validator::make($request->post(), [
+            'profissionName' => 'required|string|min:5',
+            'speciality' => 'required|string|min:5',
+            'bio' => 'string|min:5',
+            'type' => 'required|integer|max:3',
+            'birthday' => 'required|date|date_format:Y-m-d',
+            'phone_number' => 'required|regex:/^([0-9\s\-\+\(\)]*)$/|max:12',
+            'skills' => 'required|array|min:1',
+            'skills.*' => 'required|integer|min:1|exists:categories,id',
+        ]);
+
+        if ($validator->fails()) {
+            return self::failed($validator->errors()->first());
+        } else {
+            $user = User::find(auth()->user()->id);
+            $user->birthday = $request->get('birthday');
+            $user->phone_number = $request->get('phone_number');
+            $user->profissionName = $request->get('profissionName');
+            $user->bio = $request->has('bio') ? $request->get('bio') : '';
+            $user->speciality = $request->get('speciality');
+            $user->type = $request->get('type');
+            $skills = $request->get('skills');
+
+            for ($i = 0; $i < count($skills); $i++)
+                Skill::create([
+                    'user_id' => auth()->user()->id,
+                    'category_id' => $skills[$i],
+                ]);
+            $user->save();
+            return $this->success('تم إعداد الحساب', $user);
+        }
+    }
+
+    public function get_profile()
+    {
+        $user = User::find(auth()->user()->id);
+        return $this->success('معلومات حسابي', $user);
+    }
+
+    public function changePassword(Request $request)
+    {
+        $validator = Validator::make($request->post(), [
+            'old_password' => 'required|string|min:5',
+            'new_password' => 'required|string|min:5',
+            'confirm_password' => 'required|string|min:5|same:new_password',
+        ]);
+
+        if ($validator->fails()) {
+            return self::failed($validator->errors()->first());
+        } else {
+
+            $user = User::find(auth()->user()->id);
+            if (!Hash::check($request->old_password, $user->password))
+                return $this->failed('Password is wrong');
+
+            $user->password = Hash::make($request->new_password);
+            $user->save();
+            return $this->success('Change password Success');
+        }
+    }
+
     public function cms_login(Request $request)
     {
-        $validator = Validator::make($request->all(), [
+        $validator = Validator::make($request->post(), [
             'email' => 'required|email|exists:admins,email',
             'password' => 'required|string|min:5',
         ]);
@@ -111,13 +174,25 @@ class AuthController extends Controller
         }
     }
 
-    public function CMS_test()
+    public function changeCMSPassword(Request $request)
     {
-        return response('This is CMS dashboard');
-    }
+        $validator = Validator::make($request->post(), [
+            'old_password' => 'required|string|min:5',
+            'new_password' => 'required|string|min:5',
+            'confirm_password' => 'required|string|min:5|same:new_password',
+        ]);
 
-    public function User_test()
-    {
-        return response('This is User dashboard');
+        if ($validator->fails()) {
+            return self::failed($validator->errors()->first());
+        } else {
+
+            $user = Admin::find(auth()->user()->id);
+            if (!Hash::check($request->old_password, $user->password))
+                return $this->failed('Password is wrong');
+
+            $user->password = Hash::make($request->new_password);
+            $user->save();
+            return $this->success('Change password Success');
+        }
     }
 }

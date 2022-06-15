@@ -3,6 +3,9 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\authController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\ProjectController;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,24 +30,45 @@ Route::group(
     ],
     function () {
 
-        Route::post('/test', [authController::class, 'user_test']);
+        Route::post('/account', [authController::class, 'account']);
+        Route::get('/profile', [authController::class, 'get_profile']);
+        Route::post('/password/change', [authController::class, 'changePassword']);
+
+        Route::get('/category/parents', [CategoryController::class, 'getParent']);
+        Route::get('/category/children', [CategoryController::class, 'getChildren']);
+        Route::get('/category/child/{id}', [CategoryController::class, 'getChild']);
+
+        Route::get('/projects', [ProjectController::class, 'index']);
+        Route::post('/projects', [ProjectController::class, 'create']);
+        Route::get('/projects/{id}', [ProjectController::class, 'show']);
+        Route::post('/projects/{id}', [ProjectController::class, 'update']);
+        Route::delete('/projects/{id}', [ProjectController::class, 'destroy']);
     }
 );
 
-Route::group([], function () {
+Route::post('/CMS/login', [authController::class, 'cms_login']);
 
-    Route::post('/CMS/login', [authController::class, 'cms_login']);
+Route::group(
+    [
+        'middleware' => [
+            'auth:admin-api',
+            'pass:admin'
+        ]
+    ],
+    function () {
+        $cms = '/CMS';
 
-    Route::group(
-        [
-            'middleware' => [
-                'auth:admin-api',
-                'pass:admin'
-            ]
-        ],
-        function () {
+        Route::post($cms . '/password/change', [authController::class, 'changeCMSPassword']);
+        Route::get($cms . '/category', [CategoryController::class, 'index']);
+        Route::post($cms . '/category', [CategoryController::class, 'create']);
+        Route::get($cms . '/category/{id}', [CategoryController::class, 'show']);
+        Route::post($cms . '/category/{id}', [CategoryController::class, 'update']);
+        Route::delete($cms . '/category/{id}', [CategoryController::class, 'destroy']);
 
-            Route::post('/CMS/test', [authController::class, 'CMS_test']);
-        }
-    );
-});
+        Route::get($cms . '/admins', [AdminController::class, 'index']);
+        Route::post($cms . '/admins', [AdminController::class, 'create']);
+        Route::get($cms . '/admins/{id}', [AdminController::class, 'show']);
+        Route::post($cms . '/admins/{id}', [AdminController::class, 'update']);
+        Route::delete($cms . '/admins/{id}', [AdminController::class, 'destroy']);
+    }
+);
