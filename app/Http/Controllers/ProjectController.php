@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Traits;
 use App\Models\MediaProject;
-use App\Models\Project;
+use App\Models\PreviousProject;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
 
@@ -14,9 +14,9 @@ class ProjectController extends Controller
     use Traits\ImageTrait;
     use Traits\ResponseTrait;
 
-    public function index(Request $request)
+    public function index()
     {
-        return $this->success('المشاريع', Project::all());
+        return $this->success('المشاريع', PreviousProject::all());
     }
 
     public function create(Request $request)
@@ -32,7 +32,7 @@ class ProjectController extends Controller
         if ($validator->fails()) {
             return self::failed($validator->errors()->first());
         } else {
-            $project = Project::create([
+            $project = PreviousProject::create([
                 'user_id' => auth()->user()->id,
                 'name' => $request->get('name'),
                 'description' => $request->get('description'),
@@ -61,7 +61,7 @@ class ProjectController extends Controller
 
     public function show($id)
     {
-        $project = Project::find($id);
+        $project = PreviousProject::find($id);
         if ($project === null)
             return $this->failed('There is no project with this ID');
         $project_media = MediaProject::where('project_id', $id)->get();
@@ -88,7 +88,7 @@ class ProjectController extends Controller
         if ($validator->fails()) {
             return self::failed($validator->errors()->first());
         } else {
-            $project = Project::find($id);
+            $project = PreviousProject::find($id);
             if ($request->name)
                 $project->name = $request->name;
             if ($request->description)
@@ -131,7 +131,7 @@ class ProjectController extends Controller
 
     public function destroy($id)
     {
-        $project = Project::find($id);
+        $project = PreviousProject::find($id);
         if ($project === null)
             return $this->failed('There is no project with this ID');
         $project_media = MediaProject::where('project_id', $id)->get();
@@ -142,7 +142,7 @@ class ProjectController extends Controller
                 File::delete(public_path($media->path));
         }
 
-        Project::destroy($id);
+        PreviousProject::destroy($id);
         return $this->success('Deleting Success!');
     }
 }
