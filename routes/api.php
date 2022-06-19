@@ -6,6 +6,7 @@ use App\Http\Controllers\authController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\ServicesController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,6 +21,7 @@ use App\Http\Controllers\ProjectController;
 
 Route::post('/register', [authController::class, 'register']);
 Route::post('/login', [authController::class, 'login']);
+Route::get('/guest', [ServicesController::class, 'index']);
 
 Route::group(
     [
@@ -33,6 +35,7 @@ Route::group(
         Route::post('/account', [authController::class, 'account']);
         Route::get('/profile', [authController::class, 'get_profile']);
         Route::post('/password/change', [authController::class, 'changePassword']);
+        Route::post('/logout', [authController::class, 'logout']);
 
         Route::get('/category/parents', [CategoryController::class, 'getParent']);
         Route::get('/category/children', [CategoryController::class, 'getChildren']);
@@ -59,6 +62,8 @@ Route::group(
         $cms = '/CMS';
 
         Route::post($cms . '/password/change', [authController::class, 'changeCMSPassword']);
+        Route::post($cms . '/logout', [authController::class, 'logoutCMS']);
+
         Route::get($cms . '/category', [CategoryController::class, 'index']);
         Route::post($cms . '/category', [CategoryController::class, 'create']);
         Route::get($cms . '/category/{id}', [CategoryController::class, 'show']);
@@ -70,5 +75,11 @@ Route::group(
         Route::get($cms . '/admins/{id}', [AdminController::class, 'show']);
         Route::post($cms . '/admins/{id}', [AdminController::class, 'update']);
         Route::delete($cms . '/admins/{id}', [AdminController::class, 'destroy']);
+
+        Route::get($cms . '/service', [ServicesController::class, 'index_cms']);
+        Route::post($cms . '/service', [ServicesController::class, 'create']);
+        Route::get($cms . '/service/{id}', [ServicesController::class, 'show']);
+        Route::post($cms . '/service/{id}', [ServicesController::class, 'update']);
+        Route::delete($cms . '/service/{id}', [ServicesController::class, 'destroy']);
     }
 );

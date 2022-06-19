@@ -25,6 +25,7 @@ class ProjectController extends Controller
             'name' => 'required|string|min:5|max:32',
             'description' => 'required|string|min:5',
             'link' => 'string|min:25',
+            'cover' => 'max:5000|mimes:bmp,jpg,png,jpeg,svg',
             'media' => 'array',
             'media.*' => 'required|max:20000|mimes:bmp,jpg,png,jpeg,svg,gif,flv,mp4,mkv,m4v,gifv,m3u8,ts,3gp,mov,avi,wmv',
         ]);
@@ -32,12 +33,24 @@ class ProjectController extends Controller
         if ($validator->fails()) {
             return self::failed($validator->errors()->first());
         } else {
-            $project = PreviousProject::create([
-                'user_id' => auth()->user()->id,
-                'name' => $request->get('name'),
-                'description' => $request->get('description'),
-                'link' => $request->get('link'),
-            ]);
+            if ($request->cover) {
+                $cover = $request->file('cover');
+                $image = $this->saveImage($cover, 'freelancers projects');
+
+                $project = PreviousProject::create([
+                    'user_id' => auth()->user()->id,
+                    'name' => $request->get('name'),
+                    'description' => $request->get('description'),
+                    'link' => $request->get('link'),
+                    'cover_image' => $image['path'],
+                ]);
+            } else
+                $project = PreviousProject::create([
+                    'user_id' => auth()->user()->id,
+                    'name' => $request->get('name'),
+                    'description' => $request->get('description'),
+                    'link' => $request->get('link'),
+                ]);
 
             if ($request->has('media')) {
                 $media = $request->file('media');

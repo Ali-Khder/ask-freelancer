@@ -26,6 +26,7 @@ return new class extends Migration
             $table->string('profissionName')->nullable();
             $table->string('speciality')->nullable();
             $table->smallInteger('type');
+            $table->string('cover_image')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

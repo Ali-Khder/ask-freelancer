@@ -6,17 +6,9 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class PreviousProject extends Model
+class BaseModel extends Model
 {
     use HasFactory;
-
-    protected $fillable = [
-        'user_id',
-        'name',
-        'description',
-        'link',
-        'cover_image'
-    ];
 
     public function getCreatedAtAttribute($value)
     {

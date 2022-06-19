@@ -4,16 +4,18 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use App\Http\Traits\ResponseTrait;
+use App\Http\Traits;
 use App\Models\Admin;
 use App\Models\Skill;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
-    use ResponseTrait;
+    use Traits\ResponseTrait;
+    use Traits\ImageTrait;
 
     public function register(Request $request)
     {
@@ -76,7 +78,7 @@ class AuthController extends Controller
                 $message = 'تم تسجيل الدخول';
                 return $this->success($message, $response);
             } else
-                return  $this->failed('فشل تسجيل الدخول');
+                return  $this->failed('كلمة السر خاطئة');
         }
     }
 
@@ -89,8 +91,9 @@ class AuthController extends Controller
             'type' => 'required|integer|max:3',
             'birthday' => 'required|date|date_format:Y-m-d',
             'phone_number' => 'required|regex:/^([0-9\s\-\+\(\)]*)$/|max:12',
-            'skills' => 'required|array|min:1',
-            'skills.*' => 'required|integer|min:1|exists:categories,id',
+            'skills' => 'array',
+            'skills.*' => 'integer|min:1|exists:categories,id',
+            'cover' => 'max:5000|mimes:bmp,jpg,png,jpeg,svg',
         ]);
 
         if ($validator->fails()) {
@@ -105,11 +108,18 @@ class AuthController extends Controller
             $user->type = $request->get('type');
             $skills = $request->get('skills');
 
-            for ($i = 0; $i < count($skills); $i++)
-                Skill::create([
-                    'user_id' => auth()->user()->id,
-                    'category_id' => $skills[$i],
-                ]);
+            if ($request->cover) {
+                $cover = $request->file('cover');
+                $image = $this->saveImage($cover, 'users');
+                $user->cover_image = $image['path'];
+            }
+
+            if ($request->skills)
+                for ($i = 0; $i < count($skills); $i++)
+                    Skill::create([
+                        'user_id' => auth()->user()->id,
+                        'category_id' => $skills[$i],
+                    ]);
             $user->save();
             return $this->success('تم إعداد الحساب', $user);
         }
@@ -118,7 +128,16 @@ class AuthController extends Controller
     public function get_profile()
     {
         $user = User::find(auth()->user()->id);
-        return $this->success('معلومات حسابي', $user);
+        $skills = DB::table('skills')
+            ->join('categories', 'categories.id', '=', 'skills.category_id')
+            ->where('user_id', auth()->user()->id)
+            ->select('categories.id', 'categories.name')
+            ->get();
+        $response = [
+            'user' => $user,
+            'skills' => $skills
+        ];
+        return $this->success('معلومات حسابي', $response);
     }
 
     public function changePassword(Request $request)
@@ -141,6 +160,15 @@ class AuthController extends Controller
             $user->save();
             return $this->success('Change password Success');
         }
+    }
+
+    public function logout(Request $request)
+    {
+        DB::table('oauth_access_tokens')
+            ->where('user_id', auth()->user()->id)
+            ->where('scopes', '["user"]')
+            ->delete();
+        return $this->success('تم تسجيل الخروج بنجاح');
     }
 
     public function cms_login(Request $request)
@@ -170,7 +198,7 @@ class AuthController extends Controller
                 $message = 'تم تسجيل الدخول إلى نظام إدارة المحتوى (CMS)';
                 return $this->success($message, $response);
             } else
-                return  $this->failed('لا يمكنك تسجيل الدخول');
+                return  $this->failed('كلمة السر خاطئة');
         }
     }
 
@@ -194,5 +222,14 @@ class AuthController extends Controller
             $user->save();
             return $this->success('Change password Success');
         }
+    }
+
+    public function logoutCMS()
+    {
+        DB::table('oauth_access_tokens')
+            ->where('user_id', auth()->user()->id)
+            ->where('scopes', '["admin"]')
+            ->delete();
+        return $this->success('Logout Success');
     }
 }
