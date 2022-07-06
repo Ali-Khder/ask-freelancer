@@ -7,6 +7,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ServicesController;
+use App\Http\Controllers\PostController;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,6 +36,7 @@ Route::group(
         Route::post('/account', [authController::class, 'account']);
         Route::get('/profile', [authController::class, 'get_profile']);
         Route::post('/password/change', [authController::class, 'changePassword']);
+        Route::post('/password/reset', [authController::class, 'passwordReset']);
         Route::post('/logout', [authController::class, 'logout']);
 
         Route::get('/category/parents', [CategoryController::class, 'getParent']);
@@ -46,6 +48,17 @@ Route::group(
         Route::get('/projects/{id}', [ProjectController::class, 'show']);
         Route::post('/projects/{id}', [ProjectController::class, 'update']);
         Route::delete('/projects/{id}', [ProjectController::class, 'destroy']);
+    
+        Route::post('/account confirmation/mail', [authController::class, 'sendConfirmationMail']);
+        Route::post('/account confirmation/verification', [authController::class, 'verification']);
+
+        Route::group([
+            'prefix' => 'post'] ,function(){
+                Route::post('category/{id}/create', [PostController::class, 'createPost']);
+                Route::post('/edit/{id}', [PostController::class, 'editPost']);
+                Route::delete('/delete/{id}', [PostController::class, 'deletePost']);
+            }
+        );
     }
 );
 
@@ -62,6 +75,7 @@ Route::group(
         $cms = '/CMS';
 
         Route::post($cms . '/password/change', [authController::class, 'changeCMSPassword']);
+        Route::post($cms . '/password/reset', [authController::class, 'passwordResetCMS']);
         Route::post($cms . '/logout', [authController::class, 'logoutCMS']);
 
         Route::get($cms . '/category', [CategoryController::class, 'index']);
