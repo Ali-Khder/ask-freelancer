@@ -256,17 +256,15 @@ class AuthController extends Controller
 
             try {
                 Mail::to($user['email'])->send(new ConfirmationMail($contact_data));
-            
+
                 $response = [
                     'code' => $code,
                 ];
                 $message = 'تم إرسال الكود الى البريد الخاص بك';
                 return $this->success($message, $response);
-            
             } catch (\Exception $e) {
                 return $this->failed('الرجاء معاودة المحاولة في وقت لاحق');
             }
-    
         } catch (\Exception $e) {
             return self::failed($e->getMessage());
         }
@@ -277,26 +275,27 @@ class AuthController extends Controller
      * verification 
      * Check two code to verify the account
      * @return message by JsonResponse
-     * */    
-    public function verification(Request $request){
-        try{
-            $rules=[
+     * */
+    public function verification(Request $request)
+    {
+        try {
+            $rules = [
                 'code' => ['required', 'numeric', 'digits:6'],
                 'correctCode' => ['required', 'numeric', 'digits:6', 'min:10000'],
             ];
-            
+
             $validator = Validator::make($request->all(), $rules);
-            if( $validator->fails()){
+            if ($validator->fails()) {
                 return $this->failed($validator->errors()->first());
             }
 
-            if($request->correctCode!=$request->code){
-                return $this->failed('رمز خاطئ');         
+            if ($request->correctCode != $request->code) {
+                return $this->failed('رمز خاطئ');
             }
-            
+
             $message = 'رمز صحيح، تم تأكيد الحساب';
             return $this->success($message);
-        }catch(\Exception $e){
+        } catch (\Exception $e) {
             return self::failed($e->getMessage());
         }
     }
@@ -307,28 +306,29 @@ class AuthController extends Controller
      * Check two code to verify the account 
      * Reset user password
      * @return message by JsonResponse
-     * */    
-    public function passwordReset(Request $request){
-        try{
-            $rules=[
+     * */
+    public function passwordReset(Request $request)
+    {
+        try {
+            $rules = [
                 'code' => ['required', 'numeric', 'digits:6'],
                 'correctCode' => ['required', 'numeric', 'digits:6', 'min:10000'],
-                'password' => ['required','string', 'min:8', 'confirmed'],
+                'password' => ['required', 'string', 'min:8', 'confirmed'],
             ];
 
             $validator = Validator::make($request->all(), $rules);
-            if( $validator->fails()){
+            if ($validator->fails()) {
                 return $this->failed($validator->errors()->first());
             }
             $user = User::find(auth()->user()->id);
-            if($request->correctCode!=$request->code){
+            if ($request->correctCode != $request->code) {
                 return $this->failed('رمز خاطئ');
             }
             $data['password'] = Hash::make($request->password);
             $user->update($data);
             $message = 'رمز صحيح، تم اعادة تعيين كلمة المرور';
             return $this->success($message);
-        }catch(\Exception $e){
+        } catch (\Exception $e) {
             return self::failed($e->getMessage());
         }
     }
@@ -339,28 +339,29 @@ class AuthController extends Controller
      * Check two code to verify the account 
      * Reset admin password
      * @return message by JsonResponse
-     * */    
-    public function passwordResetCMS(Request $request){
-        try{
-            $rules=[
+     * */
+    public function passwordResetCMS(Request $request)
+    {
+        try {
+            $rules = [
                 'code' => ['required', 'numeric', 'digits:6'],
                 'correctCode' => ['required', 'numeric', 'digits:6', 'min:10000'],
-                'password' => ['required','string', 'min:8', 'confirmed'],
+                'password' => ['required', 'string', 'min:8', 'confirmed'],
             ];
 
             $validator = Validator::make($request->all(), $rules);
-            if( $validator->fails()){
+            if ($validator->fails()) {
                 return $this->failed($validator->errors()->first());
             }
             $admin = Admin::find(auth()->user()->id);
-            if($request->correctCode!=$request->code){
+            if ($request->correctCode != $request->code) {
                 return $this->failed('رمز خاطئ');
             }
             $data['password'] = Hash::make($request->password);
             $admin->update($data);
             $message = 'رمز صحيح، تم اعادة تعيين كلمة المرور';
             return $this->success($message);
-        }catch(\Exception $e){
+        } catch (\Exception $e) {
             return self::failed($e->getMessage());
         }
     }

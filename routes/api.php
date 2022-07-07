@@ -54,11 +54,22 @@ Route::group(
 
         Route::group([
             'prefix' => 'post'] ,function(){
-                Route::post('category/{id}/create', [PostController::class, 'createPost']);
-                Route::post('/edit/{id}', [PostController::class, 'editPost']);
-                Route::delete('/delete/{id}', [PostController::class, 'deletePost']);
+
+                Route::group(
+                    ['middleware' => 'PostExists'] ,function () {
+                        Route::group(
+                            ['middleware' => 'MyOwnPost'] ,function () {
+                                Route::post('/edit/{id}', [PostController::class, 'editPost']);
+                                Route::delete('/delete/{id}', [PostController::class, 'deletePost']);
+                            });
+                        Route::get('/{id}', [PostController::class, 'getPost']);
+                    });
+
+                Route::post('/create', [PostController::class, 'createPost']);
             }
         );
+
+        Route::get('/user/{id}/posts', [PostController::class, 'getUserPosts']);
     }
 );
 

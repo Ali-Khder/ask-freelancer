@@ -51,6 +51,11 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    // Relationship one (user) to many (post)
+    public function posts(){
+        return $this->hasMany(Post::class,'user_id','id');
+    }
+
     public function getCreatedAtAttribute($value)
     {
         return Carbon::createFromTimestamp(strtotime($value))

@@ -21,11 +21,12 @@ class PostController extends Controller
      * create post
      * Create a user post on the database
      * @return message by JsonResponse
-     * */    
-    public function createPost (Request $request, $id){
-        try{
-            Validator::extend('date_multi_format', function($attribute, $value, $formats) {
-                foreach($formats as $format) {
+     * */
+    public function createPost(Request $request)
+    {
+        try {
+            Validator::extend('date_multi_format', function ($attribute, $value, $formats) {
+                foreach ($formats as $format) {
                     $parsed = date_parse_from_format($format, $value);
                     if ($parsed['error_count'] === 0 && $parsed['warning_count'] === 0) {
                         return true;
@@ -34,39 +35,41 @@ class PostController extends Controller
                 return false;
             });
 
-            $rules=[
-                'title'=> ['required','string'],
-                'body'=> ['required','string'],
-                'price'=> ['required', 'numeric'],
-                'deliveryDate'=> ['required','date','date_multi_format:"Y-n-j","Y-m-d"','after:now'],
+            $rules = [
+                'title' => ['required', 'string'],
+                'body' => ['required', 'string'],
+                'price' => ['required', 'numeric'],
+                'deliveryDate' => ['required', 'date', 'date_multi_format:"Y-n-j","Y-m-d"', 'after:now'],
                 'media' => 'array',
                 'media.*' => 'required|max:20000|mimes:bmp,jpg,png,jpeg,svg,gif,flv,mp4,mkv,m4v,gifv,m3u8,ts,3gp,mov,avi,wmv',
+                'category' => ['array'],
+                'category.*' => ['required', 'numeric'],
             ];
-            
+
             $validator = Validator::make($request->all(), $rules);
-            if( $validator->fails()){
+            if ($validator->fails()) {
                 return $this->failed($validator->errors()->first());
             }
 
             $user = User::find(auth()->user()->id);
 
-            if($request->price <= 30){
+            if ($request->price <= 30) {
                 $post = Post::create([
-                    'title'=> $request->title,
-                    'body'=> $request->body,
-                    'user_id'=> $user['id'],
-                    'price'=> $request->price,
-                    'deliveryDate'=> $request->deliveryDate,
-                    'type'=>'small services'
+                    'title' => $request->title,
+                    'body' => $request->body,
+                    'user_id' => $user['id'],
+                    'price' => $request->price,
+                    'deliveryDate' => $request->deliveryDate,
+                    'type' => 'small services'
                 ]);
-            }else{
+            } else {
                 $post = Post::create([
-                    'title'=> $request->title,
-                    'body'=> $request->body,
-                    'user_id'=> $user['id'],
-                    'price'=> $request->price,
-                    'deliveryDate'=> $request->deliveryDate,
-                ]);    
+                    'title' => $request->title,
+                    'body' => $request->body,
+                    'user_id' => $user['id'],
+                    'price' => $request->price,
+                    'deliveryDate' => $request->deliveryDate,
+                ]);
             }
 
             if ($request->has('media')) {
@@ -86,36 +89,38 @@ class PostController extends Controller
                 }
             }
 
-            PostCategory::create([
-                'post_id'=> $post['id'],
-                'category_id'=> $id,
-            ]);
+            foreach ($request->category as $ID) {
+                PostCategory::create([
+                    'post_id' => $post['id'],
+                    'category_id' => $ID,
+                ]);
+            }
 
             $message = 'تم إنشاء منشور بنجاح';
             return $this->success($message);
-
-        }catch(\Exception $e){
+        } catch (\Exception $e) {
             return $this->failed($e->getMessage());
         }
     }
-    
+
     /*
      * 
      * edit post
      * Edit a user post on the database
      * @return message by JsonResponse
-     * */    
-    public function editPost (Request $request, $id){
-        try{
+     * */
+    public function editPost(Request $request, $id)
+    {
+        try {
             $post = Post::find($id);
             $user = User::find(auth()->user()->id);
 
-            if($post->user_id != $user->id){
-                return $this->returnError('ليس لديك الصلاحية بتعديل هذا المنشور');
+            if ($post->user_id != $user->id) {
+                return $this->failed('ليس لديك الصلاحية بتعديل هذا المنشور');
             }
 
-            Validator::extend('date_multi_format', function($attribute, $value, $formats) {
-                foreach($formats as $format) {
+            Validator::extend('date_multi_format', function ($attribute, $value, $formats) {
+                foreach ($formats as $format) {
                     $parsed = date_parse_from_format($format, $value);
                     if ($parsed['error_count'] === 0 && $parsed['warning_count'] === 0) {
                         return true;
@@ -124,22 +129,24 @@ class PostController extends Controller
                 return false;
             });
 
-            $request['created_at']=$post['created_at'];
+            $request['created_at'] = $post['created_at'];
 
-            $rules=[
-                'title'=> ['string'],
-                'body'=> ['string'],
-                'price'=> ['numeric'],
-                'created_at'=> ['date'],
-                'deliveryDate'=> ['date','date_multi_format:"Y-n-j","Y-m-d"','after:created_at'],
+            $rules = [
+                'title' => ['string'],
+                'body' => ['string'],
+                'price' => ['numeric'],
+                'created_at' => ['date'],
+                'deliveryDate' => ['date', 'date_multi_format:"Y-n-j","Y-m-d"', 'after:created_at'],
                 'media' => 'array',
                 'media.*' => 'required|max:20000|mimes:bmp,jpg,png,jpeg,svg,gif,flv,mp4,mkv,m4v,gifv,m3u8,ts,3gp,mov,avi,wmv',
                 'delete_media' => 'array',
                 'delete_media.*' => 'required|integer|min:1|exists:media_projects,id',
+                'category' => ['array'],
+                'category.*' => ['required', 'numeric'],
             ];
 
             $validator = Validator::make($request->all(), $rules);
-            if( $validator->fails()){
+            if ($validator->fails()) {
                 return $this->failed($validator->errors()->first());
             }
 
@@ -149,13 +156,13 @@ class PostController extends Controller
             if ($request->body)
                 $post->body = $request->body;
 
-            if ($request->price){
+            if ($request->price) {
                 $post->price = $request->price;
 
-                if($request->price <= 30)
-                    $post->type ='small services';
-                else{
-                    $post->type ='non small services';
+                if ($request->price <= 30)
+                    $post->type = 'small services';
+                else {
+                    $post->type = 'non small services';
                 }
             }
 
@@ -163,7 +170,23 @@ class PostController extends Controller
                 $post->deliveryDate = $request->deliveryDate;
 
             $post->save();
-        
+
+            if ($request->category) {
+
+                $postcategories = $post->postcategories;
+
+                foreach ($postcategories as $postcategory) {
+                    $postcategory->delete();
+                }
+
+                foreach ($request->category as $ID) {
+                    PostCategory::create([
+                        'post_id' => $post['id'],
+                        'category_id' => $ID,
+                    ]);
+                }
+            }
+
             if ($request->has('media')) {
                 $media = $request->file('media');
                 if ($media != null) {
@@ -195,8 +218,7 @@ class PostController extends Controller
 
             $message = 'تم تعديل المنشور بنجاح';
             return $this->success($message);
-
-        }catch(\Exception $e){
+        } catch (\Exception $e) {
             return $this->failed($e->getMessage());
         }
     }
@@ -206,41 +228,95 @@ class PostController extends Controller
      * delete post
      * Delete a user post on the database
      * @return message by JsonResponse
-     * */    
-    public function deletePost ($id){
-        try{  
+     * */
+    public function deletePost($id)
+    {
+        try {
             $post = Post::find($id);
             $user = User::find(auth()->user()->id);
 
-            if($post->user_id != $user->id){
-                return $this->returnError('ليس لديك الصلاحية بتعديل هذا المنشور');
-            }
+            $MediasProject = $post->MediasProject;
 
-            $MediasProject=$post->MediasProject;
-
-            foreach( $MediasProject as $MediaProject){
+            foreach ($MediasProject as $MediaProject) {
                 $MediaProject->delete();
             }
-            
-            $offers=$post->offers;
 
-            foreach( $offers as $offer){
+            $offers = $post->offers;
+
+            foreach ($offers as $offer) {
                 $offer->delete();
             }
-            
-            $postcategories=$post->postcategories;
 
-            foreach( $postcategories as $postcategory){
+            $postcategories = $post->postcategories;
+
+            foreach ($postcategories as $postcategory) {
                 $postcategory->delete();
             }
-            
+
             $post->delete();
             $message = 'تم حذف المنشور بنجاح';
             return $this->success($message);
-
-        }catch(\Exception $e){
+        } catch (\Exception $e) {
             return $this->failed($e->getMessage());
         }
     }
-    
+
+    /*
+     * 
+     * get Post 
+     * Get the post by post id
+     * @return Data by JsonResponse : <All about the post>
+     * */
+    public function getPost($id)
+    {
+        try {
+            $post = Post::find($id);
+
+            $post->MediasProject;
+
+            $post->offers;
+
+            $postcategories = $post->postcategories;
+
+            foreach ($postcategories as $postcategory) {
+                $postcategory->category;
+            }
+
+            return $this->success('post ' . $id, $post);
+        } catch (\Exception $e) {
+            return $this->failed($e->getMessage());
+        }
+    }
+
+    /*
+     * 
+     * my Posts 
+     * Get all id user posts
+     * @return Data by JsonResponse : array of posts
+     * */
+    public function getUserPosts($id)
+    {
+        try {
+
+            $user = User::find($id);
+
+            $posts = $user->posts;
+
+            foreach ($posts as $post) {
+                $post->MediasProject;
+
+                $post->offers;
+
+                $postcategories = $post->postcategories;
+
+                foreach ($postcategories as $postcategory) {
+                    $postcategory->category;
+                }
+            }
+
+            return $this->success('My posts', $posts);
+        } catch (\Exception $e) {
+            return $this->failed($e->getMessage());
+        }
+    }
 }
