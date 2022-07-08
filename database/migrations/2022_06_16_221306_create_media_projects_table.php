@@ -22,6 +22,7 @@ return new class extends Migration
                 ->references('id')
                 ->on('previous_projects')
                 ->onDelete('cascade');
+
             $table->timestamps();
         });
     }
