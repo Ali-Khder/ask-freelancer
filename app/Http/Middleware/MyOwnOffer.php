@@ -4,11 +4,11 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use App\Models\Post;
+use App\Models\Offer;
 use App\Models\User;
 use App\Http\Traits;
 
-class MyOwnPost
+class MyOwnOffer
 {
     use Traits\ResponseTrait;
 
@@ -21,12 +21,12 @@ class MyOwnPost
      */
     public function handle(Request $request, Closure $next)
     {
-        $post = Post::find($request->id);
+        $offer = Offer::find($request->id);
         $user = User::find(auth()->user()->id);
 
-        if ($post->user_id == $user->id) {
+        if ($offer->user_id == $user->id) {
             return $next($request);
         }
-        return $this->failed('ليس لديك الصلاحية بالوصول الى هذا المنشور');
+        return $this->failed('ليس لديك الصلاحية بالوصول الى هذا العرض');
     }
 }

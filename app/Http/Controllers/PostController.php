@@ -113,11 +113,6 @@ class PostController extends Controller
     {
         try {
             $post = Post::find($id);
-            $user = User::find(auth()->user()->id);
-
-            if ($post->user_id != $user->id) {
-                return $this->failed('ليس لديك الصلاحية بتعديل هذا المنشور');
-            }
 
             Validator::extend('date_multi_format', function ($attribute, $value, $formats) {
                 foreach ($formats as $format) {
@@ -233,7 +228,6 @@ class PostController extends Controller
     {
         try {
             $post = Post::find($id);
-            $user = User::find(auth()->user()->id);
 
             $MediasProject = $post->MediasProject;
 
@@ -290,7 +284,7 @@ class PostController extends Controller
 
     /*
      * 
-     * my Posts 
+     * get User Posts 
      * Get all id user posts
      * @return Data by JsonResponse : array of posts
      * */
@@ -314,7 +308,7 @@ class PostController extends Controller
                 }
             }
 
-            return $this->success('My posts', $posts);
+            return $this->success('user ' .$id, $posts);
         } catch (\Exception $e) {
             return $this->failed($e->getMessage());
         }
