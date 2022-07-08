@@ -3,12 +3,11 @@
 namespace App\Http\Middleware;
 
 use Closure;
-use Illuminate\Http\Request;
-use App\Models\Post;
-use App\Models\User;
 use App\Http\Traits;
+use Illuminate\Http\Request;
+use App\Models\Offer;
 
-class MyOwnPost
+class OfferExists
 {
     use Traits\ResponseTrait;
 
@@ -21,12 +20,11 @@ class MyOwnPost
      */
     public function handle(Request $request, Closure $next)
     {
-        $post = Post::find($request->id);
-        $user = User::find(auth()->user()->id);
-
-        if ($post->user_id == $user->id) {
+        $offer = Offer::find($request->id);
+        if ($offer != null) {
             return $next($request);
         }
-        return $this->failed('ليس لديك الصلاحية بالوصول الى هذا المنشور');
+
+        return self::failed('العرض غير موجود');
     }
 }

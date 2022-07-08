@@ -8,6 +8,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ServicesController;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\OfferController;
 
 /*
 |--------------------------------------------------------------------------
@@ -54,7 +55,6 @@ Route::group(
 
         Route::group([
             'prefix' => 'post'] ,function(){
-
                 Route::group(
                     ['middleware' => 'PostExists'] ,function () {
                         Route::group(
@@ -70,6 +70,19 @@ Route::group(
         );
 
         Route::get('/user/{id}/posts', [PostController::class, 'getUserPosts']);
+
+        Route::group([
+            'prefix' => 'offer'] ,function(){
+                Route::post('/create/post/{id}', [OfferController::class, 'createOffer'])->middleware('PostExists');
+                Route::group(
+                    ['middleware' => ['OfferExists','MyOwnOffer']] ,function () {        
+                                Route::post('/edit/{id}', [OfferController::class, 'editOffer']);
+                                Route::delete('/delete/{id}', [OfferController::class, 'deleteOffer']);
+                });
+            }
+        );
+
+        Route::get('/post/{id}/offers', [OfferController::class, 'getPostOffers'])->middleware('PostExists');
     }
 );
 
