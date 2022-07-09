@@ -9,6 +9,7 @@ use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ServicesController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\OfferController;
+use App\Http\Controllers\IdentityDocumentionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -83,6 +84,8 @@ Route::group(
         );
 
         Route::get('/post/{id}/offers', [OfferController::class, 'getPostOffers'])->middleware('PostExists');
+
+        Route::post('/ID documention/send', [IdentityDocumentionController::class, 'sendIdentityDocument'])->name('user.idDocumention.send');
     }
 );
 
@@ -119,5 +122,9 @@ Route::group(
         Route::get($cms . '/service/{id}', [ServicesController::class, 'show']);
         Route::post($cms . '/service/{id}', [ServicesController::class, 'update']);
         Route::delete($cms . '/service/{id}', [ServicesController::class, 'destroy']);
+
+        
+        Route::post('/ID documention/respone', [IdentityDocumentionController::class, 'ResponeIdentityDocumentation'])->name('cms.idDocumention.respone');
+        Route::post('/ID documention/get', [IdentityDocumentionController::class, 'GetIdentityDocumentation'])->name('cms.idDocumention.get');
     }
 );

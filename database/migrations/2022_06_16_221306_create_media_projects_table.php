@@ -16,12 +16,10 @@ return new class extends Migration
         Schema::create('media_projects', function (Blueprint $table) {
             $table->id();
             $table->string('path');
-            $table->integer('project_id')->unsigned();
-
-            $table->foreign('project_id')
-                ->references('id')
-                ->on('previous_projects')
-                ->onDelete('cascade');
+            
+            $table->integer('project_id')->unsigned()->nullable();
+            $table->integer('post_id')->unsigned()->nullable();
+            $table->integer('user_id')->unsigned()->nullable();
 
             $table->timestamps();
         });

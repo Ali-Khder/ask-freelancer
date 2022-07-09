@@ -35,6 +35,6 @@ class Post extends Model
 
     // Relationship one (post) to many (media)
     public function MediasProject(){
-        return $this->hasMany(MediaProject::class,'project_id','id');
+        return $this->hasMany(MediaProject::class,'post_id','id');
     }
 }

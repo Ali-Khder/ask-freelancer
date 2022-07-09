@@ -27,6 +27,8 @@ return new class extends Migration
             $table->string('speciality')->nullable();
             $table->smallInteger('type');
             $table->string('cover_image')->nullable();
+            $table->boolean('is_confirmed');
+            $table->boolean('is_documented');
             $table->rememberToken();
             $table->timestamps();
         });

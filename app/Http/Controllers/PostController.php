@@ -41,9 +41,9 @@ class PostController extends Controller
                 'price' => ['required', 'numeric'],
                 'deliveryDate' => ['required', 'date', 'date_multi_format:"Y-n-j","Y-m-d"', 'after:now'],
                 'media' => 'array',
-                'media.*' => 'required|max:20000|mimes:bmp,jpg,png,jpeg,svg,gif,flv,mp4,mkv,m4v,gifv,m3u8,ts,3gp,mov,avi,wmv',
+                'media.*' => 'required|max:20000|mimes:bmp,jpg,png,jpeg,svg,gif,flv,mp4,mkv,m4v,gifv,m3u8,ts,3gp,mov,avi,wmv,pdf',
                 'category' => ['array'],
-                'category.*' => ['required', 'numeric'],
+                'category.*' => ['required', 'numeric', 'exists:categories,id'],
             ];
 
             $validator = Validator::make($request->all(), $rules);
@@ -79,11 +79,11 @@ class PostController extends Controller
                     foreach ($media as $file) {
 
                         $i++;
-                        $media = $this->saveImage($file, 'freelancers projects', $i);
+                        $media = $this->saveImage($file, 'freelancers Posts', $i);
 
                         $medias[] = MediaProject::create([
                             'path' => $media['path'],
-                            'project_id' => $post->id,
+                            'post_id' => $post->id,
                         ]);
                     }
                 }
@@ -133,11 +133,11 @@ class PostController extends Controller
                 'created_at' => ['date'],
                 'deliveryDate' => ['date', 'date_multi_format:"Y-n-j","Y-m-d"', 'after:created_at'],
                 'media' => 'array',
-                'media.*' => 'required|max:20000|mimes:bmp,jpg,png,jpeg,svg,gif,flv,mp4,mkv,m4v,gifv,m3u8,ts,3gp,mov,avi,wmv',
+                'media.*' => 'required|max:20000|mimes:bmp,jpg,png,jpeg,svg,gif,flv,mp4,mkv,m4v,gifv,m3u8,ts,3gp,mov,avi,wmv,pdf',
                 'delete_media' => 'array',
                 'delete_media.*' => 'required|integer|min:1|exists:media_projects,id',
                 'category' => ['array'],
-                'category.*' => ['required', 'numeric'],
+                'category.*' => ['required', 'numeric', 'exists:categories,id'],
             ];
 
             $validator = Validator::make($request->all(), $rules);
@@ -189,11 +189,11 @@ class PostController extends Controller
                     foreach ($media as $file) {
 
                         $i++;
-                        $media = $this->saveImage($file, 'freelancers projects', $i);
+                        $media = $this->saveImage($file, 'freelancers posts', $i);
 
                         $medias[] = MediaProject::create([
                             'path' => $media['path'],
-                            'project_id' => $post->id,
+                            'post_id' => $post->id,
                         ]);
                     }
                 }
