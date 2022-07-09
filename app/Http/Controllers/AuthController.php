@@ -80,7 +80,7 @@ class AuthController extends Controller
                 $message = 'تم تسجيل الدخول';
                 return $this->success($message, $response);
             } else
-                return  $this->failed('كلمة السر خاطئة');
+                return $this->failed('كلمة السر خاطئة');
         }
     }
 
@@ -200,7 +200,7 @@ class AuthController extends Controller
                 $message = 'تم تسجيل الدخول إلى نظام إدارة المحتوى (CMS)';
                 return $this->success($message, $response);
             } else
-                return  $this->failed('كلمة السر خاطئة');
+                return $this->failed('كلمة السر خاطئة');
         }
     }
 
@@ -236,8 +236,8 @@ class AuthController extends Controller
     }
 
     /*
-     * 
-     * send account confirmation mail 
+     *
+     * send account confirmation mail
      * Send a 6-digit code to the user's email
      * @return Data by JsonResponse : < code >
      * */
@@ -271,8 +271,8 @@ class AuthController extends Controller
     }
 
     /*
-     * 
-     * verification 
+     *
+     * verification
      * Check two code to verify the account
      * @return message by JsonResponse
      * */
@@ -301,9 +301,9 @@ class AuthController extends Controller
     }
 
     /*
-     * 
-     * password Reset 
-     * Check two code to verify the account 
+     *
+     * password Reset
+     * Check two code to verify the account
      * Reset user password
      * @return message by JsonResponse
      * */
@@ -334,13 +334,13 @@ class AuthController extends Controller
     }
 
     /*
-     * 
-     * password Reset CMS 
-     * Check two code to verify the account 
+     *
+     * password Reset CMS
+     * Check two code to verify the account
      * Reset admin password
      * @return message by JsonResponse
      * */
-    public function passwordResetCMS(Request $request)
+    public function     passwordResetCMS(Request $request)
     {
         try {
             $rules = [

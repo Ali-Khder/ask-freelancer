@@ -41,7 +41,7 @@ class ServicesController extends Controller
 
                 $service = Service::create([
                     'title' => $request->title,
-                    'body' => $request->title,
+                    'body' => $request->body,
                     'image' => $image['path'],
                 ]);
             } else

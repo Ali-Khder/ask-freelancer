@@ -25,15 +25,17 @@ class AdminController extends Controller
             'username' => 'required|string|min:2|max:15',
             'email' => 'required|unique:admins,email',
             'password' => 'required|string|min:5',
+            'role_id' => 'required|integer|min:1|exists:roles,id',
         ]);
 
         if ($validator->fails()) {
             return $this->failed($validator->errors()->first());
         } else {
             $admin = Admin::create([
-                'username' => $request->username,
-                'email' => $request->email,
+                'username' => $request->get('username'),
+                'email' => $request->get('email'),
                 'password' => Hash::make($request->password),
+                'role_id' => $request->get('role_id'),
             ]);
 
             $message = 'Creating Success';
@@ -58,13 +60,15 @@ class AdminController extends Controller
 
         $validator = Validator::make($request->all(), [
             'username' => 'required|string|min:2|max:15',
+            'role_id' => 'required|integer|min:1|exists:roles,id',
         ]);
 
         if ($validator->fails()) {
             return $this->failed($validator->errors()->first());
         } else {
 
-            $admin->username = $request->username;
+            $admin->username = $request->get('username');
+            $admin->role_id = $request->get('role_id');
             $admin->save();
 
             $message = 'Updating Success';

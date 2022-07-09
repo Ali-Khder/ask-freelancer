@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Admin;
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -16,10 +17,15 @@ class UserSeeder extends Seeder
      */
     public function run()
     {
+        Role::create([
+            'name' => 'super-admin'
+        ]);
+
         Admin::create([
             'username' => 'admin',
             'email' => 'admin@gmail.com',
             'password' => bcrypt('12345'),
+            'role_id' => 1,
         ]);
 
         User::create([

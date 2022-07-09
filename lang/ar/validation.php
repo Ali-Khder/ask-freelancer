@@ -176,6 +176,7 @@ return [
         'username' => 'اسم المستخدم',
         'profissionName' => 'المهنة',
         'speciality' => 'التخصص',
+        'amount' => 'الرصيد',
     ],
 
 ];

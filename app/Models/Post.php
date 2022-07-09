@@ -27,7 +27,7 @@ class Post extends Model
     public function postcategories(){
         return $this->hasMany(PostCategory::class,'post_id','id');
     }
-    
+
     // Relationship one (post) to many (offer)
     public function offers(){
         return $this->hasMany(Offer::class,'post_id','id');
