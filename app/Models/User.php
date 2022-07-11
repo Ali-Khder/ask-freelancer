@@ -68,6 +68,16 @@ class User extends Authenticatable
         return $this->hasMany(MediaProject::class,'user_id','id');
     }
 
+    // Relationship one (user) to many (order)
+    public function ordersfreelancer(){
+        return $this->hasMany(WorkOnMe::class,'freelancer_id','id');
+    }
+
+    // Relationship one (user) to many (order)
+    public function orderscustomer(){
+        return $this->hasMany(WorkOnMe::class,'user_id','id');
+    }
+
     public function getCreatedAtAttribute($value)
     {
         return Carbon::createFromTimestamp(strtotime($value))

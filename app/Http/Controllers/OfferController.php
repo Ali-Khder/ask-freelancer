@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\Post;
 use App\Models\Offer;
 use App\Models\User;
+use App\Models\Order;
 
 class OfferController extends Controller
 {
@@ -152,4 +153,125 @@ class OfferController extends Controller
             return $this->failed($e->getMessage());
         }
     }
+
+    /*
+     * 
+     * accept offer
+     * Customer acceptance of the Freelancer offer
+     * @return message by JsonResponse
+     * */
+    public function acceptOffer($id)
+    {
+        try {
+
+            $offer = Offer::find($id);
+
+            $post = $offer->post;
+            $order= $post->order;
+
+            $user = User::find(auth()->user()->id);
+
+            if ($order != null) {
+                return $this->failed('يوحد عرض مقبول مسبقاً');
+            }
+    
+            if ($post->user_id != $user->id) {
+                return $this->failed('ليس لديك الصلاحية بقبول هذا العرض');
+            }
+
+            Order::create([
+                'discription' => $offer->discription,
+                'price' => $offer->price,
+                'deliveryDate' => $offer->deliveryDate,
+                'freelancer_id' => $offer->user_id,
+                'user_id' => $post->user_id,
+                'post_id' => $post->id,
+            ]);
+
+            return $this->success('تم قبول العرض بنجاح');
+        } catch (\Exception $e) {
+            return $this->failed($e->getMessage());
+        }
+    }
+
+    /*
+     * 
+     * cancel accept offers 
+     * Customer cancels acceptance of the Freelancer offer
+     * The freelancer refused the customer's approval to my offer
+     * @return message by JsonResponse
+     * */
+    public function cancelOrder($id)
+    {
+        try {
+
+            $order = Order::find($id);
+
+            $user = User::find(auth()->user()->id);
+
+            if (($order->user_id != $user->id) && ($order->freelancer_id != $user->id)) {
+                return $this->failed('ليس لديك الصلاحية للقيام بذلك');
+            }
+
+            if ($order->post_id == null) {
+                return $this->failed('ليس لديك الصلاحية للقيام بذلك');
+            }
+
+            $order->delete();
+
+            return $this->success('تم إلغاء قبول العرض');
+        } catch (\Exception $e) {
+            return $this->failed($e->getMessage());
+        }
+    }
+
+    /*
+     * 
+     * accept accept offers 
+     * The freelancer accepted the customer's approval to my offer
+     * @return message by JsonResponse
+     * */
+    public function acceptAcceptOffer($id)
+    {
+        try {
+
+            $order = Order::find($id);
+
+            $user = User::find(auth()->user()->id);
+    
+            if ($order->freelancer_id != $user->id) {
+                return $this->failed('ليس لديك الصلاحية بالموافقة على قبول العرض');
+            }
+
+            $post = $order->post;
+            
+            $MediasProject = $post->MediasProject;
+            
+            foreach ($MediasProject as $MediaProject) {
+                $MediaProject->delete();
+            }
+
+            $offers = $post->offers;
+
+            foreach ($offers as $offer) {
+                $offer->delete();
+            }
+
+            $postcategories = $post->postcategories;
+
+            foreach ($postcategories as $postcategory) {
+                $postcategory->delete();
+            }
+
+            $post->delete();
+
+            $order->post_id=null;
+            $order->save();
+
+            return $this->success('تمت الموافقة على قبول العرض');
+        } catch (\Exception $e) {
+            return $this->failed($e->getMessage());
+        }
+    }
+
 }

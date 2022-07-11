@@ -13,15 +13,15 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('posts', function (Blueprint $table) {
+        Schema::create('orders', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('title');
-            $table->longText('body');
+            $table->float('price'); 
+            $table->Date('deliveryDate');
             $table->integer('user_id')->unsigned();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->float('price'); 
-            $table->enum('type',['small services','non small services']);
-            $table->Date('deliveryDate');
+            $table->integer('freelancer_id')->unsigned();
+            $table->foreign('freelancer_id')->references('id')->on('users')->onDelete('cascade');
+            $table->integer('post_id')->unsigned()->nullable();
             $table->timestamps();
         });
     }
@@ -33,6 +33,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('posts');
+        Schema::dropIfExists('orders');
     }
 };

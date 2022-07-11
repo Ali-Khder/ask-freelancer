@@ -111,19 +111,18 @@ class IdentityDocumentionController extends Controller
     public function GetIdentityDocumentation()
     {
         try {
-            
-            $media = MediaProject::get()->groupBy('user_id');
-            
+
+            $media = MediaProject::whereNotNull('user_id')->get()->groupBy('user_id');
+
             foreach ($media as $one_media) {
-                $user=$one_media[0]->user;
+                $user = $one_media[0]->user;
                 if ($user->is_documented == 0) {
-                    return $this->success('user '. $user->id , $one_media);
+                    return $this->success('user ' . $user->id, $one_media);
                 }
             }
 
             $message = 'لا يوجد وثائق';
             return $this->success($message);
-
         } catch (\Exception $e) {
             return $this->failed($e->getMessage());
         }

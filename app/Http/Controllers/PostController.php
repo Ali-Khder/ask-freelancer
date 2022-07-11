@@ -42,7 +42,7 @@ class PostController extends Controller
                 'deliveryDate' => ['required', 'date', 'date_multi_format:"Y-n-j","Y-m-d"', 'after:now'],
                 'media' => 'array',
                 'media.*' => 'required|max:20000|mimes:bmp,jpg,png,jpeg,svg,gif,flv,mp4,mkv,m4v,gifv,m3u8,ts,3gp,mov,avi,wmv,pdf',
-                'category' => ['array'],
+                'category' => ['required','array'],
                 'category.*' => ['required', 'numeric', 'exists:categories,id'],
             ];
 
@@ -136,7 +136,7 @@ class PostController extends Controller
                 'media.*' => 'required|max:20000|mimes:bmp,jpg,png,jpeg,svg,gif,flv,mp4,mkv,m4v,gifv,m3u8,ts,3gp,mov,avi,wmv,pdf',
                 'delete_media' => 'array',
                 'delete_media.*' => 'required|integer|min:1|exists:media_projects,id',
-                'category' => ['array'],
+                'category' => ['required','array'],
                 'category.*' => ['required', 'numeric', 'exists:categories,id'],
             ];
 
@@ -308,7 +308,67 @@ class PostController extends Controller
                 }
             }
 
-            return $this->success('user ' .$id, $posts);
+            return $this->success('user ' . $id, $posts);
+        } catch (\Exception $e) {
+            return $this->failed($e->getMessage());
+        }
+    }
+
+    /*
+     * 
+     * get small services 
+     * Get all small services
+     * @return Data by JsonResponse : array of posts
+     * */
+    public function getSmallServices()
+    {
+        try {
+
+            $posts = Post::where('type', 'small services')->orderBy('created_at', 'desc')->get();
+
+            foreach ($posts as $post) {
+                $post->MediasProject;
+
+                $post->offers;
+
+                $postcategories = $post->postcategories;
+
+                foreach ($postcategories as $postcategory) {
+                    $postcategory->category;
+                }
+            }
+
+            return $this->success('small services ', $posts);
+        } catch (\Exception $e) {
+            return $this->failed($e->getMessage());
+        }
+    }
+
+    /*
+    * 
+    * get non small services
+    * Get all non small services
+    * @return Data by JsonResponse : array of posts
+    * */
+    public function getNonSmallServices()
+    {
+        try {
+
+            $posts = Post::where('type', 'non small services')->orderBy('created_at', 'desc')->get();
+
+            foreach ($posts as $post) {
+                $post->MediasProject;
+
+                $post->offers;
+
+                $postcategories = $post->postcategories;
+
+                foreach ($postcategories as $postcategory) {
+                    $postcategory->category;
+                }
+            }
+
+            return $this->success('non small services ', $posts);
         } catch (\Exception $e) {
             return $this->failed($e->getMessage());
         }
