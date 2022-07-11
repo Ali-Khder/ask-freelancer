@@ -3,12 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Redis;
 use App\Http\Traits\ResponseTrait;
 use App\Models\Category;
-use GrahamCampbell\ResultType\Success;
 use Illuminate\Support\Facades\Validator;
-use Prophecy\Call\Call;
 
 class CategoryController extends Controller
 {
@@ -81,20 +78,27 @@ class CategoryController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'string|min:2|max:15',
-            'parent_id' => 'integer|min:1|exists:categories,id',
+            'parent_id' => 'integer|min:0',
         ]);
 
         if ($validator->fails()) {
             return $this->failed($validator->errors()->first());
         } else {
+            $parent_id = $request->get('parent_id');
             $category = Category::find($id);
             if ($category === null)
                 return $this->failed('لا يوجد فئة بهذا الرقم');
 
-            if ($category->name)
-                $category->name = $request->name;
-            if ($category->parent_id)
-                $category->parent_id = $request->parent_id;
+            if ($request->get('name'))
+                $category->name = $request->get('name');
+            if ($parent_id == 0)
+                $category->parent_id = null;
+            else {
+                $parent = Category::find($parent_id);
+                if ($parent === null)
+                    return $this->failed('لا يوجد فئة بهذا الرقم');
+                $category->parent_id = $parent_id;
+            }
             $category->save();
 
             $message = 'تم التحديث بنجاح';
