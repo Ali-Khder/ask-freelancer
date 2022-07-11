@@ -68,6 +68,7 @@ class Kernel extends HttpKernel
         'MyOwnPost' => \App\Http\Middleware\MyOwnPost::class,
         'OfferExists' => \App\Http\Middleware\OfferExists::class,
         'MyOwnOffer' => \App\Http\Middleware\MyOwnOffer::class,
+        'OrderExists' => \App\Http\Middleware\OrderExists::class,
         'permissions' => \App\Http\Middleware\Permissions::class,
     ];
 }

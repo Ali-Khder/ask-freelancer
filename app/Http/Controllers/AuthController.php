@@ -293,6 +293,10 @@ class AuthController extends Controller
                 return $this->failed('رمز خاطئ');
             }
 
+            $user = User::find(auth()->user()->id);
+            $user->is_confirmed = true;
+            $user->save();
+
             $message = 'رمز صحيح، تم تأكيد الحساب';
             return $this->success($message);
         } catch (\Exception $e) {

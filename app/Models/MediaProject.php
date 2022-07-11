@@ -12,8 +12,25 @@ class MediaProject extends Model
 
     protected $fillable = [
         'path',
-        'project_id'
+        'project_id',
+        'post_id',
+        'user_id',
     ];
+
+    // Relationship one (project) to many (mediaproject)
+    public function project(){
+        return $this->belongsTo(PreviousProject::class,'project_id','id');
+    }
+    
+    // Relationship one (post) to many (mediaproject)
+    public function post(){
+        return $this->belongsTo(Post::class,'post_id','id');
+    }
+
+    // Relationship one (post) to many (mediaproject)
+    public function user(){
+        return $this->belongsTo(User::class,'user_id','id');
+    }
 
     public function getCreatedAtAttribute($value)
     {

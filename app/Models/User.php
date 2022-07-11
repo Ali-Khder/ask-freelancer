@@ -30,6 +30,13 @@ class User extends Authenticatable
         'speciality',
         'type',
         'cover_image',
+        'is_confirmed',
+        'is_documented',
+    ];
+
+    protected $attributes=[
+        'is_confirmed' => false,
+        'is_documented' => false,
     ];
 
     /**
@@ -54,6 +61,21 @@ class User extends Authenticatable
     // Relationship one (user) to many (post)
     public function posts(){
         return $this->hasMany(Post::class,'user_id','id');
+    }
+
+    // Relationship one (user) to many (mediaproject)
+    public function mediaprojects(){
+        return $this->hasMany(MediaProject::class,'user_id','id');
+    }
+
+    // Relationship one (user) to many (order)
+    public function ordersfreelancer(){
+        return $this->hasMany(WorkOnMe::class,'freelancer_id','id');
+    }
+
+    // Relationship one (user) to many (order)
+    public function orderscustomer(){
+        return $this->hasMany(WorkOnMe::class,'user_id','id');
     }
 
     public function getCreatedAtAttribute($value)
