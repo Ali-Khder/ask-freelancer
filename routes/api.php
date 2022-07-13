@@ -94,10 +94,6 @@ Route::group(
 
         Route::post('/ID documention/send', [IdentityDocumentionController::class, 'sendIdentityDocument'])->name('user.idDocumention.send');
 
-                Route::post('/create', [PostController::class, 'createPost']);
-            }
-        );
-
         Route::get('/user/{id}/posts', [PostController::class, 'getUserPosts']);
 
         Route::group([
