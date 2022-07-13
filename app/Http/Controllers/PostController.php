@@ -20,6 +20,8 @@ class PostController extends Controller
      * 
      * create post
      * Create a user post on the database
+     * 0 : Non small services
+     * 1 : small services
      * @return message by JsonResponse
      * */
     public function createPost(Request $request)
@@ -60,7 +62,7 @@ class PostController extends Controller
                     'user_id' => $user['id'],
                     'price' => $request->price,
                     'deliveryDate' => $request->deliveryDate,
-                    'type' => 'small services'
+                    'type' => 1,
                 ]);
             } else {
                 $post = Post::create([
@@ -155,9 +157,9 @@ class PostController extends Controller
                 $post->price = $request->price;
 
                 if ($request->price <= 30)
-                    $post->type = 'small services';
+                    $post->type = 1;
                 else {
-                    $post->type = 'non small services';
+                    $post->type = 0;
                 }
             }
 
@@ -328,7 +330,7 @@ class PostController extends Controller
     {
         try {
 
-            $posts = Post::where('type', 'small services')->orderBy('created_at', 'desc')->get();
+            $posts = Post::where('type', 1)->orderBy('created_at', 'desc')->get();
 
             foreach ($posts as $post) {
                 $post->MediasProject;
@@ -360,7 +362,7 @@ class PostController extends Controller
     {
         try {
 
-            $posts = Post::where('type', 'non small services')->orderBy('created_at', 'desc')->get();
+            $posts = Post::where('type', 0)->orderBy('created_at', 'desc')->get();
 
             foreach ($posts as $post) {
                 $post->MediasProject;

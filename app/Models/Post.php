@@ -13,8 +13,14 @@ class Post extends Model
         'title','body', 'price', 'type', 'deliveryDate', 'user_id'
     ];
 
+    /**
+     * 
+     * 0 : Non small services
+     * 1 : small services
+     * 
+     */
     protected $attributes=[
-        'type' => 'Non small services',
+        'type' => 0,
     ];
 
     // Relationship one (user) to many (post)
