@@ -43,6 +43,11 @@ trait ImageTrait
             $directory = 'gif_';
             $folder = 'gifs';
             $type = 2;
+        } elseif ($this->is_document($extension)) {
+
+            $directory = 'document_';
+            $folder = 'documents';
+            $type = 3;
         } else {
 
             $directory = 'video_';
@@ -71,6 +76,13 @@ trait ImageTrait
     private function is_gif($extension)
     {
         if ($extension == 'gif')
+            return true;
+        return false;
+    }
+
+    private function is_document($extension)
+    {
+        if ($extension == 'pdf' || $extension == 'docx')
             return true;
         return false;
     }
