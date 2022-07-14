@@ -303,9 +303,9 @@ class PostController extends Controller
             foreach ($posts as $post) {
                 $post->MediasProject;
 
-                $post->offers;
-                
                 $post->user;
+                
+                $post->offers;
 
                 $postcategories = $post->postcategories;
 
