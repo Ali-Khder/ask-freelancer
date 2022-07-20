@@ -70,5 +70,7 @@ class Kernel extends HttpKernel
         'MyOwnOffer' => \App\Http\Middleware\MyOwnOffer::class,
         'OrderExists' => \App\Http\Middleware\OrderExists::class,
         'permissions' => \App\Http\Middleware\Permissions::class,
+        'AnswerExists' => \App\Http\Middleware\AnswerExists::class,
+        'QuestionExists' => \App\Http\Middleware\QuestionExists::class,
     ];
 }

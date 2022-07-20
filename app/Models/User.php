@@ -69,13 +69,23 @@ class User extends Authenticatable
     }
 
     // Relationship one (user) to many (order)
-    public function ordersfreelancer(){
-        return $this->hasMany(WorkOnMe::class,'freelancer_id','id');
+    public function freelancerorders(){
+        return $this->hasMany(Order::class,'freelancer_id','id');
     }
 
     // Relationship one (user) to many (order)
-    public function orderscustomer(){
-        return $this->hasMany(WorkOnMe::class,'user_id','id');
+    public function userorders(){
+        return $this->hasMany(Order::class,'user_id','id');
+    }
+
+    // Relationship one (post) to one (order)
+    public function  postorders(){
+        return $this->hasOne(Order::class,'post_id','id');
+    }
+
+    // Relationship one (user) to many (skill)
+    public function skills(){
+        return $this->hasMany(Skill::class,'user_id','id');
     }
 
     public function getCreatedAtAttribute($value)
