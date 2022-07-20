@@ -103,6 +103,7 @@ Route::group(
         Route::post('/order/accept/{id}', [OfferController::class, 'acceptAcceptOffer'])->middleware(['OrderExists'])->name('user.order.accept');
 
         Route::post('/ID documention/send', [IdentityDocumentionController::class, 'sendIdentityDocument'])->name('user.idDocumention.send');
+        Route::get('/ID documention/status', [IdentityDocumentionController::class, 'getStatus'])->name('user.idDocumention.status');
 
         Route::post('/create', [PostController::class, 'createPost']);
         Route::get('/user/{id}/posts', [PostController::class, 'getUserPosts']);
@@ -163,8 +164,8 @@ Route::group(
         Route::delete($cms . '/service/{id}', [ServicesController::class, 'destroy']);
 
 
-        Route::post('/ID documention/respone', [IdentityDocumentionController::class, 'ResponeIdentityDocumentation'])->name('cms.idDocumention.respone');
-        Route::get('/ID documention/get', [IdentityDocumentionController::class, 'GetIdentityDocumentation'])->name('cms.idDocumention.get');
+        Route::post($cms . '/ID documention/respone', [IdentityDocumentionController::class, 'ResponeIdentityDocumentation'])->name('cms.idDocumention.respone');
+        Route::get($cms . '/ID documention/get', [IdentityDocumentionController::class, 'GetIdentityDocumentation'])->name('cms.idDocumention.get');
 
         Route::post($cms . '/password/change', [authController::class, 'changeCMSPassword'])->name('cms.auth.password.change');
         Route::post($cms . '/password/reset', [authController::class, 'passwordResetCMS'])->name('cms.auth.password.reset');

@@ -14,8 +14,15 @@ class IdentityDocumentionController extends Controller
     use Traits\ResponseTrait;
     use Traits\ImageTrait;
 
+    //get my status of identity (0 is false, 1 is true)
+    public function getStatus()
+    {
+        $me = User::find(auth()->user()->id);
+        return $this->success('My identity\'s status', $me->is_documented);
+    }
+
     /*
-     * 
+     *
      * send identity document
      * Storing the user's identity document on the database for acceptance or rejection by the admin
      * @return message by JsonResponse
@@ -59,7 +66,7 @@ class IdentityDocumentionController extends Controller
     }
 
     /*
-     * 
+     *
      * respone identity documentation
      * Acceptance or rejection of user documents by the admin
      * true for Acceptance | false for rejection
@@ -103,7 +110,7 @@ class IdentityDocumentionController extends Controller
     }
 
     /*
-     * 
+     *
      * get identity documentation
      * get user identification documents
      * @return message by JsonResponse
@@ -112,17 +119,27 @@ class IdentityDocumentionController extends Controller
     {
         try {
 
-            $media = MediaProject::whereNotNull('user_id')->get()->groupBy('user_id');
+            $media = MediaProject::whereNotNull('user_id')
+                ->orderBy('created_at', 'asc')
+                ->get()
+                ->groupBy('user_id');
 
+            $arr = [];
+            $react = false;
             foreach ($media as $one_media) {
-                $user = $one_media[0]->user;
-                if ($user->is_documented == 0) {
-                    return $this->success('user ' . $user->id, $one_media);
+                for ($i = 0; $i < count($one_media); $i++) {
+                    $user = $one_media[$i]->user;
+                    if ($user->is_documented == 0) {
+                        $arr[] = $one_media;
+                        $react = true;
+                    }
                 }
             }
 
-            $message = 'لا يوجد وثائق';
-            return $this->success($message);
+            if ($react)
+                return $this->success('طلبات توثيق المستخدمين', $arr);
+            else
+                return $this->success('لا يوجد وثائق');
         } catch (\Exception $e) {
             return $this->failed($e->getMessage());
         }
