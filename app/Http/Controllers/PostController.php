@@ -274,8 +274,6 @@ class PostController extends Controller
 
             $post->offers;
 
-            $post->user;
-
             $postcategories = $post->postcategories;
 
             foreach ($postcategories as $postcategory) {
@@ -306,7 +304,10 @@ class PostController extends Controller
                 $post->MediasProject;
 
                 $post->user;
+<<<<<<< HEAD
 
+=======
+>>>>>>> d3e819ef00def1cb48e5502d01dac9f66e32a75e
                 $post->offers;
 
                 $postcategories = $post->postcategories;
@@ -337,8 +338,11 @@ class PostController extends Controller
             foreach ($posts as $post) {
                 $post->MediasProject;
 
+<<<<<<< HEAD
                 $post->user;
 
+=======
+>>>>>>> d3e819ef00def1cb48e5502d01dac9f66e32a75e
                 $post->offers;
 
                 $postcategories = $post->postcategories;
@@ -370,8 +374,6 @@ class PostController extends Controller
                 $post->MediasProject;
 
                 $post->offers;
-
-                $post->user;
 
                 $postcategories = $post->postcategories;
 

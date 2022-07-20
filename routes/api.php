@@ -12,7 +12,11 @@ use App\Http\Controllers\OfferController;
 use App\Http\Controllers\IdentityDocumentionController;
 use App\Http\Controllers\RolePermissionController;
 use App\Http\Controllers\ChargeController;
+<<<<<<< HEAD
 use App\Http\Controllers\TestController;
+=======
+use App\Http\Controllers\ChatController;
+>>>>>>> d3e819ef00def1cb48e5502d01dac9f66e32a75e
 
 /*
 |--------------------------------------------------------------------------
@@ -37,6 +41,9 @@ Route::group(
         ]
     ],
     function () {
+        Route::post('/message/{id}', [ChatController::class, 'sendMessage']);
+        Route::get('/message/{id}', [ChatController::class, 'index']);
+
         Route::post('/wallet', [ChargeController::class, 'createWallet']);
         Route::post('/charge', [ChargeController::class, 'charge']);
         Route::get('/wallet', [ChargeController::class, 'getAmount']);
