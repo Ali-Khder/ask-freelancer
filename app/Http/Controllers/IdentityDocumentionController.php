@@ -127,13 +127,13 @@ class IdentityDocumentionController extends Controller
             $arr = [];
             $react = false;
             foreach ($media as $one_media) {
-                for ($i = 0; $i < count($one_media); $i++) {
-                    $user = $one_media[$i]->user;
-                    if ($user->is_documented == 0) {
-                        $arr[] = $one_media;
-                        $react = true;
-                    }
+                // for ($i = 0; $i < count($one_media); $i++) {
+                $user = $one_media[0]->user;
+                if ($user->is_documented == 0) {
+                    $arr = $one_media;
+                    $react = true;
                 }
+                // }
             }
 
             if ($react)
