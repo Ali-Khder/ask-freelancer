@@ -15,6 +15,17 @@ class Category extends Model
         'parent_id'
     ];
 
+
+    // Relationship one (category) to many (question)
+    public function questions(){
+        return $this->hasMany(Question::class,'category_id','id');
+    }
+     
+    // Relationship one (category) to many (skill)
+    public function skills(){
+        return $this->hasMany(Skill::class,'category_id','id');
+    }
+
     public function getCreatedAtAttribute($value)
     {
         return Carbon::createFromTimestamp(strtotime($value))

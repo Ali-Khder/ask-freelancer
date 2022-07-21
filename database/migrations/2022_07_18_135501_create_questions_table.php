@@ -13,22 +13,17 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('skills', function (Blueprint $table) {
-            $table->id();
-            $table->integer('user_id')->unsigned();
+        Schema::create('questions', function (Blueprint $table) {
+            $table->increments('id');
+            $table->longText('question');
+            $table->integer('correctAnswer_id')->unsigned();
             $table->integer('category_id')->unsigned();
-            $table->string('period')->nullable();
-            $table->float('rate')->nullable();
-
-            $table->foreign('user_id')
-                ->references('id')
-                ->on('users')
-                ->onDelete('cascade');
 
             $table->foreign('category_id')
             ->references('id')
             ->on('categories')
             ->onDelete('cascade');
+
             $table->timestamps();
         });
     }
@@ -40,6 +35,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('skills');
+        Schema::dropIfExists('questions');
     }
 };

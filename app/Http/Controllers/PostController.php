@@ -20,6 +20,8 @@ class PostController extends Controller
      * 
      * create post
      * Create a user post on the database
+     * 0 : Non small services
+     * 1 : small services
      * @return message by JsonResponse
      * */
     public function createPost(Request $request)
@@ -42,7 +44,7 @@ class PostController extends Controller
                 'deliveryDate' => ['required', 'date', 'date_multi_format:"Y-n-j","Y-m-d"', 'after:now'],
                 'media' => 'array',
                 'media.*' => 'required|max:20000|mimes:bmp,jpg,png,jpeg,svg,gif,flv,mp4,mkv,m4v,gifv,m3u8,ts,3gp,mov,avi,wmv,pdf',
-                'category' => ['required','array'],
+                'category' => ['required', 'array'],
                 'category.*' => ['required', 'numeric', 'exists:categories,id'],
             ];
 
@@ -60,7 +62,7 @@ class PostController extends Controller
                     'user_id' => $user['id'],
                     'price' => $request->price,
                     'deliveryDate' => $request->deliveryDate,
-                    'type' => 'small services'
+                    'type' => 1,
                 ]);
             } else {
                 $post = Post::create([
@@ -136,7 +138,7 @@ class PostController extends Controller
                 'media.*' => 'required|max:20000|mimes:bmp,jpg,png,jpeg,svg,gif,flv,mp4,mkv,m4v,gifv,m3u8,ts,3gp,mov,avi,wmv,pdf',
                 'delete_media' => 'array',
                 'delete_media.*' => 'required|integer|min:1|exists:media_projects,id',
-                'category' => ['required','array'],
+                'category' => ['array'],
                 'category.*' => ['required', 'numeric', 'exists:categories,id'],
             ];
 
@@ -155,9 +157,9 @@ class PostController extends Controller
                 $post->price = $request->price;
 
                 if ($request->price <= 30)
-                    $post->type = 'small services';
+                    $post->type = 1;
                 else {
-                    $post->type = 'non small services';
+                    $post->type = 0;
                 }
             }
 
@@ -232,7 +234,9 @@ class PostController extends Controller
             $MediasProject = $post->MediasProject;
 
             foreach ($MediasProject as $MediaProject) {
-                $MediaProject->delete();
+                if (File::exists(public_path($MediaProject->path)))
+                    File::delete(public_path($MediaProject->path));
+                MediaProject::destroy($MediaProject);
             }
 
             $offers = $post->offers;
@@ -299,6 +303,11 @@ class PostController extends Controller
             foreach ($posts as $post) {
                 $post->MediasProject;
 
+                $post->user;
+<<<<<<< HEAD
+
+=======
+>>>>>>> d3e819ef00def1cb48e5502d01dac9f66e32a75e
                 $post->offers;
 
                 $postcategories = $post->postcategories;
@@ -324,11 +333,16 @@ class PostController extends Controller
     {
         try {
 
-            $posts = Post::where('type', 'small services')->orderBy('created_at', 'desc')->get();
+            $posts = Post::where('type', 1)->orderBy('created_at', 'desc')->get();
 
             foreach ($posts as $post) {
                 $post->MediasProject;
 
+<<<<<<< HEAD
+                $post->user;
+
+=======
+>>>>>>> d3e819ef00def1cb48e5502d01dac9f66e32a75e
                 $post->offers;
 
                 $postcategories = $post->postcategories;
@@ -354,7 +368,7 @@ class PostController extends Controller
     {
         try {
 
-            $posts = Post::where('type', 'non small services')->orderBy('created_at', 'desc')->get();
+            $posts = Post::where('type', 0)->orderBy('created_at', 'desc')->get();
 
             foreach ($posts as $post) {
                 $post->MediasProject;

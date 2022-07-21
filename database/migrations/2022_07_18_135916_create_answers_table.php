@@ -13,15 +13,16 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('posts', function (Blueprint $table) {
+        Schema::create('answers', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('title');
-            $table->longText('body');
-            $table->integer('user_id')->unsigned();
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->float('price'); 
-            $table->integer('type');
-            $table->Date('deliveryDate');
+            $table->longText('answer');
+            $table->integer('question_id')->unsigned();
+
+            $table->foreign('question_id')
+            ->references('id')
+            ->on('questions')
+            ->onDelete('cascade');
+
             $table->timestamps();
         });
     }
@@ -33,6 +34,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('posts');
+        Schema::dropIfExists('answers');
     }
 };

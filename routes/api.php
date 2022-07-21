@@ -12,6 +12,7 @@ use App\Http\Controllers\OfferController;
 use App\Http\Controllers\IdentityDocumentionController;
 use App\Http\Controllers\RolePermissionController;
 use App\Http\Controllers\ChargeController;
+use App\Http\Controllers\TestController;
 use App\Http\Controllers\ChatController;
 
 /*
@@ -63,10 +64,6 @@ Route::group(
         Route::post('/account confirmation/mail', [authController::class, 'sendConfirmationMail'])->name('user.accountConfirmation.mail');
         Route::post('/account confirmation/verification', [authController::class, 'verification'])->name('user.accountConfirmation.verification');
 
-
-        Route::post('/account confirmation/mail', [authController::class, 'sendConfirmationMail']);
-        Route::post('/account confirmation/verification', [authController::class, 'verification']);
-
         Route::group(
             ['middleware' => 'PostExists'],
             function () {
@@ -103,28 +100,9 @@ Route::group(
         Route::post('/order/accept/{id}', [OfferController::class, 'acceptAcceptOffer'])->middleware(['OrderExists'])->name('user.order.accept');
 
         Route::post('/ID documention/send', [IdentityDocumentionController::class, 'sendIdentityDocument'])->name('user.idDocumention.send');
-        Route::get('/ID documention/status', [IdentityDocumentionController::class, 'getStatus'])->name('user.idDocumention.status');
 
-        Route::post('/create', [PostController::class, 'createPost']);
-        Route::get('/user/{id}/posts', [PostController::class, 'getUserPosts']);
-
-        Route::group(
-            [
-                'prefix' => 'offer'
-            ],
-            function () {
-                Route::post('/create/post/{id}', [OfferController::class, 'createOffer'])->middleware('PostExists');
-                Route::group(
-                    ['middleware' => ['OfferExists', 'MyOwnOffer']],
-                    function () {
-                        Route::post('/edit/{id}', [OfferController::class, 'editOffer']);
-                        Route::delete('/delete/{id}', [OfferController::class, 'deleteOffer']);
-                    }
-                );
-            }
-        );
-
-        Route::get('/post/{id}/offers', [OfferController::class, 'getPostOffers'])->middleware('PostExists');
+        Route::post('/skill/{id}/check', [TestController::class, 'checkanswer'])->name('user.skill.check');
+        Route::get('/skill/{id}/questions/get', [TestController::class, 'getquestions'])->name('user.skill.questions.get');
     }
 );
 
@@ -141,33 +119,11 @@ Route::group(
     function () {
         $cms = '/CMS';
 
-        Route::post($cms . '/password/change', [authController::class, 'changeCMSPassword']);
-        Route::post($cms . '/password/reset', [authController::class, 'passwordResetCMS']);
-        Route::post($cms . '/logout', [authController::class, 'logoutCMS']);
-
-        Route::get($cms . '/category', [CategoryController::class, 'index']);
-        Route::post($cms . '/category', [CategoryController::class, 'create']);
-        Route::get($cms . '/category/{id}', [CategoryController::class, 'show']);
-        Route::post($cms . '/category/{id}', [CategoryController::class, 'update']);
-        Route::delete($cms . '/category/{id}', [CategoryController::class, 'destroy']);
-
-        Route::get($cms . '/admins', [AdminController::class, 'index']);
-        Route::post($cms . '/admins', [AdminController::class, 'create']);
-        Route::get($cms . '/admins/{id}', [AdminController::class, 'show']);
-        Route::post($cms . '/admins/{id}', [AdminController::class, 'update']);
-        Route::delete($cms . '/admins/{id}', [AdminController::class, 'destroy']);
-
-        Route::get($cms . '/service', [ServicesController::class, 'index_cms']);
-        Route::post($cms . '/service', [ServicesController::class, 'create']);
-        Route::get($cms . '/service/{id}', [ServicesController::class, 'show']);
-        Route::post($cms . '/service/{id}', [ServicesController::class, 'update']);
-        Route::delete($cms . '/service/{id}', [ServicesController::class, 'destroy']);
-
-
         Route::post($cms . '/ID documention/respone', [IdentityDocumentionController::class, 'ResponeIdentityDocumentation'])->name('cms.idDocumention.respone');
         Route::get($cms . '/ID documention/get', [IdentityDocumentionController::class, 'GetIdentityDocumentation'])->name('cms.idDocumention.get');
 
         Route::post($cms . '/password/change', [authController::class, 'changeCMSPassword'])->name('cms.auth.password.change');
+        Route::post($cms . '/account confirmation/mail', [authController::class, 'sendConfirmationMail'])->name('cms.accountConfirmation.mail');
         Route::post($cms . '/password/reset', [authController::class, 'passwordResetCMS'])->name('cms.auth.password.reset');
         Route::post($cms . '/logout', [authController::class, 'logoutCMS'])->name('cms.auth.logout');
 
@@ -196,5 +152,10 @@ Route::group(
         Route::get($cms . '/service/{id}', [ServicesController::class, 'show'])->name('cms.services.show');
         Route::post($cms . '/service/{id}', [ServicesController::class, 'update'])->name('cms.services.update');
         Route::delete($cms . '/service/{id}', [ServicesController::class, 'destroy'])->name('cms.services.destroy');
+
+        Route::post($cms . '/category/{id}/test/create', [TestController::class, 'createTest'])->name('cms.test.create');
+        Route::delete($cms . '/category/{id}/test/delete', [TestController::class, 'deleteTest'])->name('cms.test.delete');
+        Route::post($cms . '/test/question/{id}', [TestController::class, 'editQuestion'])->middleware(['QuestionExists'])->name('cms.question.update');
+        Route::post($cms . '/test/answer/{id}', [TestController::class, 'editAnswer'])->middleware(['AnswerExists'])->name('cms.answer.update');
     }
 );
