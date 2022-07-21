@@ -17,7 +17,7 @@ class PostController extends Controller
     use Traits\ImageTrait;
 
     /*
-     * 
+     *
      * create post
      * Create a user post on the database
      * 0 : Non small services
@@ -106,7 +106,7 @@ class PostController extends Controller
     }
 
     /*
-     * 
+     *
      * edit post
      * Edit a user post on the database
      * @return message by JsonResponse
@@ -221,7 +221,7 @@ class PostController extends Controller
     }
 
     /*
-     * 
+     *
      * delete post
      * Delete a user post on the database
      * @return message by JsonResponse
@@ -260,8 +260,8 @@ class PostController extends Controller
     }
 
     /*
-     * 
-     * get Post 
+     *
+     * get Post
      * Get the post by post id
      * @return Data by JsonResponse : <All about the post>
      * */
@@ -287,8 +287,8 @@ class PostController extends Controller
     }
 
     /*
-     * 
-     * get User Posts 
+     *
+     * get User Posts
      * Get all id user posts
      * @return Data by JsonResponse : array of posts
      * */
@@ -304,10 +304,6 @@ class PostController extends Controller
                 $post->MediasProject;
 
                 $post->user;
-<<<<<<< HEAD
-
-=======
->>>>>>> d3e819ef00def1cb48e5502d01dac9f66e32a75e
                 $post->offers;
 
                 $postcategories = $post->postcategories;
@@ -324,8 +320,8 @@ class PostController extends Controller
     }
 
     /*
-     * 
-     * get small services 
+     *
+     * get small services
      * Get all small services
      * @return Data by JsonResponse : array of posts
      * */
@@ -338,11 +334,7 @@ class PostController extends Controller
             foreach ($posts as $post) {
                 $post->MediasProject;
 
-<<<<<<< HEAD
                 $post->user;
-
-=======
->>>>>>> d3e819ef00def1cb48e5502d01dac9f66e32a75e
                 $post->offers;
 
                 $postcategories = $post->postcategories;
@@ -359,7 +351,7 @@ class PostController extends Controller
     }
 
     /*
-    * 
+    *
     * get non small services
     * Get all non small services
     * @return Data by JsonResponse : array of posts
