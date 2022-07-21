@@ -20,6 +20,11 @@ class RolePermissionController extends Controller
         return $this->success('Roles', Role::paginate(10));
     }
 
+    public function allRoles()
+    {
+        return $this->success('Roles', Role::all());
+    }
+
     public function create(Request $request)
     {
         $validator = Validator::make($request->post(), [
@@ -139,6 +144,11 @@ class RolePermissionController extends Controller
     public function permissions()
     {
         return $this->success('Permissions', Permission::paginate(10));
+    }
+
+    public function allPermissions()
+    {
+        return $this->success('Permissions', Permission::all());
     }
 
     public function getExceptPermission(Request $request)
