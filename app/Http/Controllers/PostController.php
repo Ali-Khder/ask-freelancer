@@ -44,7 +44,7 @@ class PostController extends Controller
                 'deliveryDate' => ['required', 'date', 'date_multi_format:"Y-n-j","Y-m-d"', 'after:now'],
                 'media' => 'array',
                 'media.*' => 'required|max:20000|mimes:bmp,jpg,png,jpeg,svg,gif,flv,mp4,mkv,m4v,gifv,m3u8,ts,3gp,mov,avi,wmv,pdf',
-                'category' => ['required','array'],
+                'category' => ['required', 'array'],
                 'category.*' => ['required', 'numeric', 'exists:categories,id'],
             ];
 
@@ -138,7 +138,7 @@ class PostController extends Controller
                 'media.*' => 'required|max:20000|mimes:bmp,jpg,png,jpeg,svg,gif,flv,mp4,mkv,m4v,gifv,m3u8,ts,3gp,mov,avi,wmv,pdf',
                 'delete_media' => 'array',
                 'delete_media.*' => 'required|integer|min:1|exists:media_projects,id',
-                'category' => ['required','array'],
+                'category' => ['array'],
                 'category.*' => ['required', 'numeric', 'exists:categories,id'],
             ];
 
@@ -234,7 +234,9 @@ class PostController extends Controller
             $MediasProject = $post->MediasProject;
 
             foreach ($MediasProject as $MediaProject) {
-                $MediaProject->delete();
+                if (File::exists(public_path($MediaProject->path)))
+                    File::delete(public_path($MediaProject->path));
+                MediaProject::destroy($MediaProject);
             }
 
             $offers = $post->offers;
@@ -302,6 +304,10 @@ class PostController extends Controller
                 $post->MediasProject;
 
                 $post->user;
+<<<<<<< HEAD
+
+=======
+>>>>>>> d3e819ef00def1cb48e5502d01dac9f66e32a75e
                 $post->offers;
 
                 $postcategories = $post->postcategories;
@@ -332,6 +338,11 @@ class PostController extends Controller
             foreach ($posts as $post) {
                 $post->MediasProject;
 
+<<<<<<< HEAD
+                $post->user;
+
+=======
+>>>>>>> d3e819ef00def1cb48e5502d01dac9f66e32a75e
                 $post->offers;
 
                 $postcategories = $post->postcategories;

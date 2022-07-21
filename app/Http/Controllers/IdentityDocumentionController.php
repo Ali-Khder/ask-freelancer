@@ -7,6 +7,7 @@ use App\Http\Traits;
 use Illuminate\Support\Facades\Validator;
 use App\Models\User;
 use App\Models\MediaProject;
+use Illuminate\Support\Facades\File;
 
 class IdentityDocumentionController extends Controller
 {
@@ -24,6 +25,13 @@ class IdentityDocumentionController extends Controller
     {
         try {
 
+            $user = User::find(auth()->user()->id);
+
+            if ($user->is_documented == true) {
+                $message = 'إن الحساب موثق مسبقاً';
+                return $this->success($message);
+            }
+
             $rules = [
                 'media' => ['required', 'array'],
                 'media.*' => 'required|max:20000|mimes:bmp,jpg,png,jpeg',
@@ -33,8 +41,6 @@ class IdentityDocumentionController extends Controller
             if ($validator->fails()) {
                 return $this->failed($validator->errors()->first());
             }
-
-            $user = User::find(auth()->user()->id);
 
             $media = $request->file('media');
             if ($media != null) {
@@ -88,8 +94,12 @@ class IdentityDocumentionController extends Controller
                     $user->save();
                 } else {
                     foreach ($media as $oneMedia) {
-                        $oneMedia->delete;
+                        if (File::exists(public_path($oneMedia->path)))
+                            File::delete(public_path($oneMedia->path));
+                        MediaProject::destroy($oneMedia);
                     }
+                    $user->is_documented = $request->is_documented;
+                    $user->save();
                 }
                 $message = 'تم الاستجابة للوثائق بنجاح';
                 return $this->success($message);
@@ -117,6 +127,9 @@ class IdentityDocumentionController extends Controller
             foreach ($media as $one_media) {
                 $user = $one_media[0]->user;
                 if ($user->is_documented == 0) {
+                    foreach ($one_media as $one) {
+                        $one->user;
+                    }
                     return $this->success('user ' . $user->id, $one_media);
                 }
             }
