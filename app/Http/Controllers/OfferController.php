@@ -4,11 +4,13 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Traits;
+use App\Models\MediaPost;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Post;
 use App\Models\Offer;
 use App\Models\User;
 use App\Models\Order;
+use Illuminate\Support\Facades\File;
 
 class OfferController extends Controller
 {
@@ -85,8 +87,8 @@ class OfferController extends Controller
 
             $rules = [
                 'discription' => ['string'],
-                'price' => [ 'numeric'],
-                'deliveryDate' => [ 'date', 'date_multi_format:"Y-n-j","Y-m-d"', 'after:now'],
+                'price' => ['numeric'],
+                'deliveryDate' => ['date', 'date_multi_format:"Y-n-j","Y-m-d"', 'after:now'],
             ];
 
             $validator = Validator::make($request->all(), $rules);
@@ -148,7 +150,7 @@ class OfferController extends Controller
                 $offer->user;
             }
 
-            return $this->success('post ' .$id, $offers);
+            return $this->success('post ' . $id, $offers);
         } catch (\Exception $e) {
             return $this->failed($e->getMessage());
         }
@@ -167,16 +169,22 @@ class OfferController extends Controller
             $offer = Offer::find($id);
 
             $post = $offer->post;
-            $order= $post->order;
+
+            $order = $post->order;
 
             $user = User::find(auth()->user()->id);
+
 
             if ($order != null) {
                 return $this->failed('يوحد عرض مقبول مسبقاً');
             }
-    
+
             if ($post->user_id != $user->id) {
                 return $this->failed('ليس لديك الصلاحية بقبول هذا العرض');
+            }
+
+            if ($offer->user_id == $user->id) {
+                return $this->failed('ليس بالامكان قبول عرضك');
             }
 
             Order::create([
@@ -238,17 +246,19 @@ class OfferController extends Controller
             $order = Order::find($id);
 
             $user = User::find(auth()->user()->id);
-    
+
             if ($order->freelancer_id != $user->id) {
                 return $this->failed('ليس لديك الصلاحية بالموافقة على قبول العرض');
             }
 
             $post = $order->post;
-            
-            $MediasProject = $post->MediasProject;
-            
-            foreach ($MediasProject as $MediaProject) {
-                $MediaProject->delete();
+
+            $mediaposts = $post->mediaposts;
+
+            foreach ($mediaposts as $mediapost) {
+                if (File::exists(public_path($mediapost->path)))
+                    File::delete(public_path($mediapost->path));
+                $mediapost->delete();
             }
 
             $offers = $post->offers;
@@ -265,7 +275,7 @@ class OfferController extends Controller
 
             $post->delete();
 
-            $order->post_id=null;
+            $order->post_id = null;
             $order->save();
 
             return $this->success('تمت الموافقة على قبول العرض');
@@ -273,5 +283,4 @@ class OfferController extends Controller
             return $this->failed($e->getMessage());
         }
     }
-
 }

@@ -13,12 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('media_projects', function (Blueprint $table) {
+        Schema::create('media_posts', function (Blueprint $table) {
             $table->id();
             $table->string('path');
             
-            $table->integer('project_id')->unsigned();
-            $table->foreign('project_id')->references('id')->on('previous_projects')->onDelete('cascade');
+            $table->integer('post_id')->unsigned();
+            $table->foreign('post_id')->references('id')->on('posts')->onDelete('cascade');
 
             $table->timestamps();
         });
@@ -31,6 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('media_projects');
+        Schema::dropIfExists('media_posts');
     }
 };

@@ -63,9 +63,9 @@ class User extends Authenticatable
         return $this->hasMany(Post::class,'user_id','id');
     }
 
-    // Relationship one (user) to many (mediaproject)
-    public function mediaprojects(){
-        return $this->hasMany(MediaProject::class,'user_id','id');
+    // Relationship one (user) to many (mediaidentity)
+    public function mediaidentitys(){
+        return $this->hasMany(MediaIdentity::class,'user_id','id');
     }
 
     // Relationship one (user) to many (order)

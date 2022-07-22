@@ -4,10 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Traits;
+use App\Models\MediaPost;
 use App\Models\PostCategory;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Post;
-use App\Models\MediaProject;
 use App\Models\User;
 use Illuminate\Support\Facades\File;
 
@@ -83,7 +83,7 @@ class PostController extends Controller
                         $i++;
                         $media = $this->saveImage($file, 'freelancers Posts', $i);
 
-                        $medias[] = MediaProject::create([
+                        $medias[] = MediaPost::create([
                             'path' => $media['path'],
                             'post_id' => $post->id,
                         ]);
@@ -137,7 +137,7 @@ class PostController extends Controller
                 'media' => 'array',
                 'media.*' => 'required|max:20000|mimes:bmp,jpg,png,jpeg,svg,gif,flv,mp4,mkv,m4v,gifv,m3u8,ts,3gp,mov,avi,wmv,pdf',
                 'delete_media' => 'array',
-                'delete_media.*' => 'required|integer|min:1|exists:media_projects,id',
+                'delete_media.*' => 'required|integer|min:1|exists:media_posts,id',
                 'category' => ['array'],
                 'category.*' => ['required', 'numeric', 'exists:categories,id'],
             ];
@@ -193,7 +193,7 @@ class PostController extends Controller
                         $i++;
                         $media = $this->saveImage($file, 'freelancers posts', $i);
 
-                        $medias[] = MediaProject::create([
+                        $medias[] = MediaPost::create([
                             'path' => $media['path'],
                             'post_id' => $post->id,
                         ]);
@@ -205,11 +205,11 @@ class PostController extends Controller
                 $delete_media = $request->get('delete_media');
 
                 foreach ($delete_media as $media) {
-                    $media_record = MediaProject::find($media);
+                    $media_record = MediaPost::find($media);
 
                     if (File::exists(public_path($media_record->path)))
                         File::delete(public_path($media_record->path));
-                    MediaProject::destroy($media);
+                    $media_record->delete();
                 }
             }
 
@@ -231,12 +231,12 @@ class PostController extends Controller
         try {
             $post = Post::find($id);
 
-            $MediasProject = $post->MediasProject;
+            $mediaposts = $post->mediaposts;
 
-            foreach ($MediasProject as $MediaProject) {
-                if (File::exists(public_path($MediaProject->path)))
-                    File::delete(public_path($MediaProject->path));
-                MediaProject::destroy($MediaProject);
+            foreach ($mediaposts as $mediapost) {
+                if (File::exists(public_path($mediapost->path)))
+                    File::delete(public_path($mediapost->path));
+                $mediapost->delete();
             }
 
             $offers = $post->offers;
@@ -270,7 +270,7 @@ class PostController extends Controller
         try {
             $post = Post::find($id);
 
-            $post->MediasProject;
+            $post->mediaposts;
 
             $post->offers;
 
@@ -301,13 +301,10 @@ class PostController extends Controller
             $posts = $user->posts;
 
             foreach ($posts as $post) {
-                $post->MediasProject;
+                $post->mediaposts;
 
                 $post->user;
-<<<<<<< HEAD
 
-=======
->>>>>>> d3e819ef00def1cb48e5502d01dac9f66e32a75e
                 $post->offers;
 
                 $postcategories = $post->postcategories;
@@ -336,13 +333,10 @@ class PostController extends Controller
             $posts = Post::where('type', 1)->orderBy('created_at', 'desc')->get();
 
             foreach ($posts as $post) {
-                $post->MediasProject;
+                $post->mediaposts;
 
-<<<<<<< HEAD
                 $post->user;
 
-=======
->>>>>>> d3e819ef00def1cb48e5502d01dac9f66e32a75e
                 $post->offers;
 
                 $postcategories = $post->postcategories;
@@ -371,7 +365,7 @@ class PostController extends Controller
             $posts = Post::where('type', 0)->orderBy('created_at', 'desc')->get();
 
             foreach ($posts as $post) {
-                $post->MediasProject;
+                $post->mediaposts;
 
                 $post->offers;
 

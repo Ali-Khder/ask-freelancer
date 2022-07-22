@@ -12,11 +12,8 @@ use App\Http\Controllers\OfferController;
 use App\Http\Controllers\IdentityDocumentionController;
 use App\Http\Controllers\RolePermissionController;
 use App\Http\Controllers\ChargeController;
-<<<<<<< HEAD
 use App\Http\Controllers\TestController;
-=======
 use App\Http\Controllers\ChatController;
->>>>>>> d3e819ef00def1cb48e5502d01dac9f66e32a75e
 
 /*
 |--------------------------------------------------------------------------
@@ -97,8 +94,7 @@ Route::group(
         );
 
         Route::get('/post/{id}/offers', [OfferController::class, 'getPostOffers'])->middleware('PostExists')->name('user.offers.get');
-
-        Route::post('/offer/accept/{id}', [OfferController::class, 'acceptOffer'])->middleware(['PostExists', 'MyOwnPost', 'OfferExists'])->name('user.offer.accept');
+        Route::post('/offer/accept/{id}', [OfferController::class, 'acceptOffer'])->middleware(['OfferExists'])->name('user.offer.accept');
         Route::delete('/order/cancel/{id}', [OfferController::class, 'cancelOrder'])->middleware(['OrderExists'])->name('user.order.cancel');
         Route::post('/order/accept/{id}', [OfferController::class, 'acceptAcceptOffer'])->middleware(['OrderExists'])->name('user.order.accept');
 
