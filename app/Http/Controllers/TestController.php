@@ -18,7 +18,7 @@ class TestController extends Controller
     use Traits\ImageTrait;
 
     /*
-     * 
+     *
      * create test
      * Create a category test on the database
      * @return message by JsonResponse
@@ -78,7 +78,7 @@ class TestController extends Controller
     }
 
     /*
-     * 
+     *
      * delete test
      * Create a category test on the database
      * @return message by JsonResponse
@@ -115,7 +115,7 @@ class TestController extends Controller
     }
 
     /*
-     * 
+     *
      * edit question
      * Create a category test on the database
      * @return message by JsonResponse
@@ -157,7 +157,7 @@ class TestController extends Controller
     }
 
     /*
-     * 
+     *
      * edit answer
      * Create a category test on the database
      * @return message by JsonResponse
@@ -189,7 +189,7 @@ class TestController extends Controller
     }
 
     /*
-     * 
+     *
      * check answer
      * Create a category test on the database
      * @return message by JsonResponse
@@ -243,7 +243,7 @@ class TestController extends Controller
     }
 
     /*
-     * 
+     *
      * get questions
      * Create a category test on the database
      * @return message by JsonResponse
