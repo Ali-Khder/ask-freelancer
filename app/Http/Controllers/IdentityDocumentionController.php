@@ -17,7 +17,7 @@ class IdentityDocumentionController extends Controller
     use Traits\ImageTrait;
 
     /*
-     * 
+     *
      * send identity document
      * Storing the user's identity document on the database for acceptance or rejection by the admin
      * @return message by JsonResponse
@@ -80,7 +80,7 @@ class IdentityDocumentionController extends Controller
     }
 
     /*
-     * 
+     *
      * respone identity documentation
      * Acceptance or rejection of user documents by the admin
      * true for Acceptance | false for rejection
@@ -128,7 +128,7 @@ class IdentityDocumentionController extends Controller
     }
 
     /*
-     * 
+     *
      * get identity documentation
      * get user identification documents
      * @return message by JsonResponse

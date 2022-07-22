@@ -138,12 +138,14 @@ Route::group(
         Route::post($cms . '/admins/{id}', [AdminController::class, 'update'])->name('cms.admins.update');
         Route::delete($cms . '/admins/{id}', [AdminController::class, 'destroy'])->name('cms.admins.destroy');
 
-        Route::get($cms . '/roles', [RolePermissionController::class, 'index'])->name('cms.roles.index');
+        Route::get($cms . '/roles', [RolePermissionController::class, 'index'])->name('cms.roles.index.paginate');
+        Route::get($cms . '/roles/all', [RolePermissionController::class, 'allRoles'])->name('cms.roles.index.all');
         Route::post($cms . '/roles', [RolePermissionController::class, 'create'])->name('cms.roles.create');
-        Route::get($cms . '/roles/{id}', [RolePermissionController::class, 'show'])->name('cms.roles.show');
+        Route::get($cms . '/roles/{id}', [RolePermissionController::class, 'show'])->name('cms.roles.show')->where('id', '[0-9]+');
         Route::post($cms . '/roles/{id}', [RolePermissionController::class, 'update'])->name('cms.roles.update');
         Route::delete($cms . '/roles/{id}', [RolePermissionController::class, 'destroy'])->name('cms.roles.destroy');
-        Route::get($cms . '/permissions', [RolePermissionController::class, 'permissions'])->name('cms.permissions.index');
+        Route::get($cms . '/permissions', [RolePermissionController::class, 'permissions'])->name('cms.permissions.index.paginate');
+        Route::get($cms . '/permissions/all', [RolePermissionController::class, 'allPermissions'])->name('cms.permissions.index.all');
         Route::post($cms . '/permissions/except', [RolePermissionController::class, 'getExceptPermission'])->name('cms.permissions.except');
 
         Route::get($cms . '/service', [ServicesController::class, 'index_cms'])->name('cms.services.index');
