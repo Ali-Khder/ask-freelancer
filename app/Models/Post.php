@@ -44,8 +44,8 @@ class Post extends Model
         return $this->hasOne(Order::class,'post_id','id');
     }
 
-    // Relationship one (post) to many (mediaproject)
-    public function MediasProject(){
-        return $this->hasMany(MediaProject::class,'post_id','id');
+    // Relationship one (post) to many (mediapost)
+    public function mediaposts(){
+        return $this->hasMany(MediaPost::class,'post_id','id');
     }
 }

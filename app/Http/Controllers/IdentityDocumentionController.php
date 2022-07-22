@@ -6,8 +6,9 @@ use Illuminate\Http\Request;
 use App\Http\Traits;
 use Illuminate\Support\Facades\Validator;
 use App\Models\User;
-use App\Models\MediaProject;
+use App\Models\MediaIdentity;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\DB;
 
 class IdentityDocumentionController extends Controller
 {
@@ -35,6 +36,8 @@ class IdentityDocumentionController extends Controller
             $rules = [
                 'media' => ['required', 'array'],
                 'media.*' => 'required|max:20000|mimes:bmp,jpg,png,jpeg',
+                'delete_media' => 'array',
+                'delete_media.*' => 'required|integer|min:1|exists:media_identities,id',
             ];
 
             $validator = Validator::make($request->all(), $rules);
@@ -50,10 +53,22 @@ class IdentityDocumentionController extends Controller
                     $i++;
                     $media = $this->saveImage($file, 'freelancers identity documents', $i);
 
-                    $medias[] = MediaProject::create([
+                    $medias[] = MediaIdentity::create([
                         'path' => $media['path'],
                         'user_id' => $user->id,
                     ]);
+                }
+            }
+
+            if ($request->has('delete_media')) {
+                $delete_media = $request->get('delete_media');
+
+                foreach ($delete_media as $media) {
+                    $media_record = MediaIdentity::find($media);
+
+                    if (File::exists(public_path($media_record->path)))
+                        File::delete(public_path($media_record->path));
+                    $media_record->delete();
                 }
             }
 
@@ -86,7 +101,7 @@ class IdentityDocumentionController extends Controller
             }
 
             $user = User::find($request->user_id);
-            $media = $user->mediaprojects;
+            $media = $user->mediaidentitys;
 
             if (count($media) != 0) {
                 if ($request->is_documented == true) {
@@ -96,7 +111,7 @@ class IdentityDocumentionController extends Controller
                     foreach ($media as $oneMedia) {
                         if (File::exists(public_path($oneMedia->path)))
                             File::delete(public_path($oneMedia->path));
-                        MediaProject::destroy($oneMedia);
+                        $oneMedia->delete();
                     }
                     $user->is_documented = $request->is_documented;
                     $user->save();
@@ -122,20 +137,17 @@ class IdentityDocumentionController extends Controller
     {
         try {
 
-            $media = MediaProject::whereNotNull('user_id')->get()->groupBy('user_id');
-
-            foreach ($media as $one_media) {
-                $user = $one_media[0]->user;
-                if ($user->is_documented == 0) {
-                    foreach ($one_media as $one) {
-                        $one->user;
-                    }
-                    return $this->success('user ' . $user->id, $one_media);
+            $users = User::join('media_identities', 'media_identities.user_id', '=', 'users.id')
+                ->where('users.is_documented', false)
+                ->select('users.*')
+                ->distinct()
+                ->get();
+                
+                foreach ($users as $user) {
+                    $user->mediaidentitys;
                 }
-            }
 
-            $message = 'لا يوجد وثائق';
-            return $this->success($message);
+            return $this->success('users ', $users);
         } catch (\Exception $e) {
             return $this->failed($e->getMessage());
         }

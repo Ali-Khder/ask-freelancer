@@ -6,18 +6,18 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class MediaProject extends Model
+class MediaIdentity extends Model
 {
     use HasFactory;
 
     protected $fillable = [
         'path',
-        'project_id',
+        'user_id',
     ];
 
-    // Relationship one (project) to many (mediaproject)
-    public function project(){
-        return $this->belongsTo(PreviousProject::class,'project_id','id');
+    // Relationship one (user) to many (mediaidentity)
+    public function user(){
+        return $this->belongsTo(User::class,'user_id','id');
     }
 
     public function getCreatedAtAttribute($value)
