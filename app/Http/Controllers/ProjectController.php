@@ -16,7 +16,10 @@ class ProjectController extends Controller
 
     public function index()
     {
-        return $this->success('المشاريع', PreviousProject::all());
+        return $this->success(
+            'المشاريع',
+            PreviousProject::where('user_id', auth()->user()->id)->get()
+        );
     }
 
     public function create(Request $request)
