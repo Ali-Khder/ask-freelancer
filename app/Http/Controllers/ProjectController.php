@@ -22,6 +22,14 @@ class ProjectController extends Controller
         );
     }
 
+    public function userProjects($id)
+    {
+        return $this->success(
+            'المشاريع',
+            PreviousProject::where('user_id', $id)->get()
+        );
+    }
+
     public function create(Request $request)
     {
         $validator = Validator::make($request->post(), [

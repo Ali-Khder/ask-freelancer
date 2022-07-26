@@ -56,6 +56,7 @@ Route::group(
         Route::get('/category/child/{id}', [CategoryController::class, 'getChild']);
 
         Route::get('/projects', [ProjectController::class, 'index']);
+        Route::get('/{id}/projects', [ProjectController::class, 'userProjects']);
         Route::post('/projects', [ProjectController::class, 'create']);
         Route::get('/projects/{id}', [ProjectController::class, 'show']);
         Route::post('/projects/{id}', [ProjectController::class, 'update']);
