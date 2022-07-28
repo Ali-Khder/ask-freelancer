@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Post extends Model
+class Post extends BaseModel
 {
     use HasFactory;
 
@@ -14,10 +14,10 @@ class Post extends Model
     ];
 
     /**
-     * 
+     *
      * 0 : Non small services
      * 1 : small services
-     * 
+     *
      */
     protected $attributes=[
         'type' => 0,

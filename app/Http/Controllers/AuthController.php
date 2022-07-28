@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\PreviousProject;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
@@ -127,7 +128,7 @@ class AuthController extends Controller
         }
     }
 
-    public function get_profile()
+    public function get_my_profile()
     {
         $user = User::find(auth()->user()->id);
         $skills = DB::table('skills')
@@ -138,6 +139,22 @@ class AuthController extends Controller
         $response = [
             'user' => $user,
             'skills' => $skills
+        ];
+        return $this->success('معلومات حسابي', $response);
+    }
+    public function get_user_profile($id)
+    {
+        $user = User::find($id);
+        $skills = DB::table('skills')
+            ->join('categories', 'categories.id', '=', 'skills.category_id')
+            ->where('user_id', $id)
+            ->select('categories.id', 'categories.name')
+            ->get();
+        $projects = PreviousProject::where('user_id', $id)->get();
+        $response = [
+            'user' => $user,
+            'skills' => $skills,
+            'projects' => $projects
         ];
         return $this->success('معلومات حسابي', $response);
     }

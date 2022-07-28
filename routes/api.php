@@ -47,7 +47,8 @@ Route::group(
         Route::get('/wallet', [ChargeController::class, 'getAmount']);
 
         Route::post('/account', [authController::class, 'account']);
-        Route::get('/profile', [authController::class, 'get_profile']);
+        Route::get('/profile', [authController::class, 'get_my_profile']);
+        Route::get('/profile/{id}', [authController::class, 'get_user_profile']);
         Route::post('/password/change', [authController::class, 'changePassword']);
         Route::post('/password/reset', [authController::class, 'passwordReset'])->name('user.password.reset');
         Route::post('/logout', [authController::class, 'logout']);
