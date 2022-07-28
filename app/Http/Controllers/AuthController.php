@@ -74,7 +74,7 @@ class AuthController extends Controller
                 $token = $user->createToken('MyApp', ['user'])->accessToken;
 
                 $response = [
-                    'user' => $data,
+                    'user' => $user,
                     'token' => $token
                 ];
                 $message = 'تم تسجيل الدخول';

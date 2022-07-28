@@ -38,7 +38,7 @@ Route::group(
         ]
     ],
     function () {
-        Route::post('/room/{id}', [ChatController::class, 'getRoomId']);
+        Route::get('/room/{id}', [ChatController::class, 'getRoomId']);
         Route::post('/message/{id}', [ChatController::class, 'sendMessage']);
         Route::get('/message/{id}', [ChatController::class, 'index']);
 

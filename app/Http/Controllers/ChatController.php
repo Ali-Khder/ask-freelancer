@@ -23,7 +23,7 @@ class ChatController extends Controller
 
         if ($myRoom === null)
             return $this->failed('لا يوجد دردشة بينكما بعد، أبدأ الآن');
-        return $this->success('رسائلي', $myRoom);
+        return $this->success('الدردشة', $myRoom);
     }//end of function
 
     //getting my messages for a conversation
