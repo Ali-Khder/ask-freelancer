@@ -105,9 +105,7 @@ class AuthController extends Controller
             $user = User::find(auth()->user()->id);
             $user->birthday = $request->get('birthday');
             $user->phone_number = $request->get('phone_number');
-            $user->profissionName = $request->get('profissionName');
             $user->bio = $request->has('bio') ? $request->get('bio') : '';
-            $user->speciality = $request->get('speciality');
             $user->type = $request->get('type');
             $skills = $request->get('skills');
 
@@ -117,12 +115,16 @@ class AuthController extends Controller
                 $user->cover_image = $image['path'];
             }
 
-            if ($request->skills)
-                for ($i = 0; $i < count($skills); $i++)
-                    Skill::create([
-                        'user_id' => auth()->user()->id,
-                        'category_id' => $skills[$i],
-                    ]);
+            if ($request->get('type')) {
+                $user->profissionName = $request->get('profissionName');
+                $user->speciality = $request->get('speciality');
+                if ($request->get('skills'))
+                    for ($i = 0; $i < count($skills); $i++)
+                        Skill::create([
+                            'user_id' => auth()->user()->id,
+                            'category_id' => $skills[$i],
+                        ]);
+            }
             $user->save();
             return $this->success('تم إعداد الحساب', $user);
         }
@@ -142,6 +144,7 @@ class AuthController extends Controller
         ];
         return $this->success('معلومات حسابي', $response);
     }
+
     public function get_user_profile($id)
     {
         $user = User::find($id);
@@ -361,7 +364,7 @@ class AuthController extends Controller
      * Reset admin password
      * @return message by JsonResponse
      * */
-    public function     passwordResetCMS(Request $request)
+    public function passwordResetCMS(Request $request)
     {
         try {
             $rules = [
