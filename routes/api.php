@@ -97,6 +97,7 @@ Route::group(
         Route::post('/offer/accept/{id}', [OfferController::class, 'acceptOffer'])->middleware(['OfferExists'])->name('user.offer.accept');
         Route::delete('/order/cancel/{id}', [OfferController::class, 'cancelOrder'])->middleware(['OrderExists'])->name('user.order.cancel');
         Route::post('/order/accept/{id}', [OfferController::class, 'acceptAcceptOffer'])->middleware(['OrderExists'])->name('user.order.accept');
+        Route::post('/order/get', [OfferController::class, 'getOrders'])->name('user.orders.get');
 
         Route::post('/ID documention/send', [IdentityDocumentionController::class, 'sendIdentityDocument'])->name('user.idDocumention.send');
 

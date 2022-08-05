@@ -344,7 +344,7 @@ class AuthController extends Controller
      * Reset admin password
      * @return message by JsonResponse
      * */
-    public function     passwordResetCMS(Request $request)
+    public function passwordResetCMS(Request $request)
     {
         try {
             $rules = [
