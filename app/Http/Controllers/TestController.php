@@ -80,7 +80,7 @@ class TestController extends Controller
     /*
      *
      * delete test
-     * Create a category test on the database
+     * delete a category test on the database
      * @return message by JsonResponse
      * */
     public function deleteTest($id)
@@ -117,7 +117,7 @@ class TestController extends Controller
     /*
      *
      * edit question
-     * Create a category test on the database
+     * edit a question on the database
      * @return message by JsonResponse
      * */
     public function editQuestion(Request $request, $id)
@@ -159,7 +159,7 @@ class TestController extends Controller
     /*
      *
      * edit answer
-     * Create a category test on the database
+     * edit a answer on the database
      * @return message by JsonResponse
      * */
     public function editAnswer(Request $request, $id)
@@ -191,8 +191,9 @@ class TestController extends Controller
     /*
      *
      * check answer
-     * Create a category test on the database
-     * @return message by JsonResponse
+     * Check the user's answers with the correct answers of the test conducted by the user
+     * give the experience the percentage of the user's correct answers
+     * @return Data by JsonResponse : integer
      * */
     public function checkanswer(Request $request, $id)
     {
@@ -245,8 +246,8 @@ class TestController extends Controller
     /*
      *
      * get questions
-     * Create a category test on the database
-     * @return message by JsonResponse
+     * returns test questions for a skill
+     * @@return Data by JsonResponse : array of questions
      * */
     public function getquestions($id)
     {
@@ -264,6 +265,31 @@ class TestController extends Controller
             }
 
             return $this->success('skill ' . $id, $questions);
+        } catch (\Exception $e) {
+            return $this->failed($e->getMessage());
+        }
+    }
+
+    /*
+     * 
+     * get questions
+     * returns test questions for a category
+     * @@return Data by JsonResponse : array of questions
+     * */
+    public function gettest($id)
+    {
+        try {
+
+            $category = Category::find($id);
+            if ($category === null)
+                return $this->failed('لا يوجد فئة بهذا الرقم');
+            $questions = $category->questions;
+
+            foreach ($questions as $question) {
+                $question->answers;
+            }
+
+            return $this->success('category ' . $id, $questions);
         } catch (\Exception $e) {
             return $this->failed($e->getMessage());
         }

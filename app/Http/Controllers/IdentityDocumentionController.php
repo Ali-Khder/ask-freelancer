@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\User;
 use App\Models\MediaIdentity;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\DB;
 
 class IdentityDocumentionController extends Controller
 {

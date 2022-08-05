@@ -276,6 +276,8 @@ class PostController extends Controller
 
             $postcategories = $post->postcategories;
 
+            $post->user;
+
             foreach ($postcategories as $postcategory) {
                 $postcategory->category;
             }
@@ -304,6 +306,7 @@ class PostController extends Controller
                 $post->mediaposts;
 
                 $post->user;
+
                 $post->offers;
 
                 $postcategories = $post->postcategories;
@@ -332,9 +335,11 @@ class PostController extends Controller
             $posts = Post::where('type', 1)->orderBy('created_at', 'desc')->get();
 
             foreach ($posts as $post) {
+                
+                $post->user;
+                
                 $post->mediaposts;
 
-                $post->user;
                 $post->offers;
 
                 $postcategories = $post->postcategories;
@@ -363,6 +368,9 @@ class PostController extends Controller
             $posts = Post::where('type', 0)->orderBy('created_at', 'desc')->get();
 
             foreach ($posts as $post) {
+
+                $post->user;
+
                 $post->mediaposts;
 
                 $post->offers;

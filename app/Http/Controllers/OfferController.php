@@ -235,6 +235,41 @@ class OfferController extends Controller
 
     /*
      * 
+     * get orders
+     * @return Data by JsonResponse : array of offers
+     * */
+    public function getOrders()
+    {
+        try {
+
+            $user = User::find(auth()->user()->id);
+
+            $userorders = $user->userorders;
+            $userorders = $userorders->whereNotNull('post_id');
+
+            foreach ($userorders as $userorder) {
+                $userorder->freelancer;
+                $userorder->post;
+            }
+
+            $freelancerorders = $user->freelancerorders;
+            $freelancerorders = $freelancerorders->whereNotNull('post_id');
+
+            foreach ($freelancerorders as $freelancerorder) {
+                $freelancerorder->user;
+                $freelancerorder->post;
+            }
+
+            return $this->success('orders ', [
+                'freelancer orders' => $freelancerorders, 'user orders' => $userorders
+            ]);
+        } catch (\Exception $e) {
+            return $this->failed($e->getMessage());
+        }
+    }
+
+    /*
+     * 
      * accept accept offers 
      * The freelancer accepted the customer's approval to my offer
      * @return message by JsonResponse

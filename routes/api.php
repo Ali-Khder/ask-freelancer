@@ -100,6 +100,7 @@ Route::group(
         Route::post('/offer/accept/{id}', [OfferController::class, 'acceptOffer'])->middleware(['OfferExists'])->name('user.offer.accept');
         Route::delete('/order/cancel/{id}', [OfferController::class, 'cancelOrder'])->middleware(['OrderExists'])->name('user.order.cancel');
         Route::post('/order/accept/{id}', [OfferController::class, 'acceptAcceptOffer'])->middleware(['OrderExists'])->name('user.order.accept');
+        Route::post('/order/get', [OfferController::class, 'getOrders'])->name('user.orders.get');
 
         Route::post('/ID documention/send', [IdentityDocumentionController::class, 'sendIdentityDocument'])->name('user.idDocumention.send');
 
@@ -161,5 +162,6 @@ Route::group(
         Route::delete($cms . '/category/{id}/test/delete', [TestController::class, 'deleteTest'])->name('cms.test.delete');
         Route::post($cms . '/test/question/{id}', [TestController::class, 'editQuestion'])->middleware(['QuestionExists'])->name('cms.question.update');
         Route::post($cms . '/test/answer/{id}', [TestController::class, 'editAnswer'])->middleware(['AnswerExists'])->name('cms.answer.update');
+        Route::get($cms . '/category/{id}/questions/get', [TestController::class, 'gettest'])->name('cms.category.questions.get');
     }
 );
