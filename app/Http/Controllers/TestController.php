@@ -246,7 +246,7 @@ class TestController extends Controller
     /*
      * 
      * get questions
-     * returns test questions for a category
+     * returns test questions for a skill
      * @@return Data by JsonResponse : array of questions
      * */
     public function getquestions($id)
@@ -265,6 +265,31 @@ class TestController extends Controller
             }
 
             return $this->success('skill ' . $id, $questions);
+        } catch (\Exception $e) {
+            return $this->failed($e->getMessage());
+        }
+    }
+
+    /*
+     * 
+     * get questions
+     * returns test questions for a category
+     * @@return Data by JsonResponse : array of questions
+     * */
+    public function gettest($id)
+    {
+        try {
+
+            $category = Category::find($id);
+            if ($category === null)
+                return $this->failed('لا يوجد فئة بهذا الرقم');
+            $questions = $category->questions;
+
+            foreach ($questions as $question) {
+                $question->answers;
+            }
+
+            return $this->success('category ' . $id, $questions);
         } catch (\Exception $e) {
             return $this->failed($e->getMessage());
         }
