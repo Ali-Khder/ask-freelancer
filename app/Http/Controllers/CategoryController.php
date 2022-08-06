@@ -11,6 +11,26 @@ class CategoryController extends Controller
 {
     use ResponseTrait;
 
+    public function getExceptCategory(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'except' => 'array',
+            'except.*' => 'required|integer|min:1|exists:categories,id',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->failed($validator->errors()->first());
+        } else {
+            if ($request->has('except')) {
+                $except = $request->get('except');
+                return $this->success('My Permissions',
+                    Category::whereNotIn('id', $except)->get());
+            } else {
+                return $this->success('My Permissions', Category::all());
+            }
+        }
+    }
+
     public function index()
     {
         return $this->success('الفئات', Category::paginate(10));

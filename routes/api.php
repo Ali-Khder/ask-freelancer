@@ -53,6 +53,7 @@ Route::group(
         Route::post('/password/reset', [authController::class, 'passwordReset'])->name('user.password.reset');
         Route::post('/logout', [authController::class, 'logout']);
 
+        Route::post('/category/except', [CategoryController::class, 'getExceptCategory']);
         Route::get('/category/parents', [CategoryController::class, 'getParent']);
         Route::get('/category/children', [CategoryController::class, 'getChildren']);
         Route::get('/category/child/{id}', [CategoryController::class, 'getChild']);
