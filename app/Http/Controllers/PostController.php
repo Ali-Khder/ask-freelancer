@@ -16,6 +16,17 @@ class PostController extends Controller
     use Traits\ResponseTrait;
     use Traits\ImageTrait;
 
+    public function search($search)
+    {
+        $posts = Post::join('users', 'users.id', '=', 'posts.user_id')
+            ->where('posts.body', 'like', "%{$search}%")
+            ->orWhere('users.first_name', 'like', "%{$search}%")
+            ->orWhere('users.last_name', 'like', "%{$search}%")
+            ->orderBy('posts.created_at', 'desc')
+            ->paginate(10);
+        return $this->success('المشاريع', $posts);
+    }
+
     /*
      *
      * create post
@@ -71,6 +82,7 @@ class PostController extends Controller
                     'user_id' => $user['id'],
                     'price' => $request->price,
                     'deliveryDate' => $request->deliveryDate,
+                    'type' => 2,
                 ]);
             }
 

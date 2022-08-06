@@ -107,7 +107,6 @@ class AuthController extends Controller
             $user->phone_number = $request->get('phone_number');
             $user->bio = $request->has('bio') ? $request->get('bio') : '';
             $user->type = $request->get('type');
-            $skills = $request->get('skills');
 
             if ($request->cover) {
                 $cover = $request->file('cover');
@@ -118,12 +117,14 @@ class AuthController extends Controller
             if ($request->get('type')) {
                 $user->profissionName = $request->get('profissionName');
                 $user->speciality = $request->get('speciality');
-                if ($request->get('skills'))
+                if ($request->get('skills')) {
+                    $skills = $request->get('skills');
                     for ($i = 0; $i < count($skills); $i++)
                         Skill::create([
                             'user_id' => auth()->user()->id,
                             'category_id' => $skills[$i],
                         ]);
+                }
             }
             $user->save();
             return $this->success('تم إعداد الحساب', $user);

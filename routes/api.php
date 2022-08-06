@@ -66,6 +66,7 @@ Route::group(
 
         Route::post('/account confirmation/mail', [authController::class, 'sendConfirmationMail'])->name('user.accountConfirmation.mail');
         Route::post('/account confirmation/verification', [authController::class, 'verification'])->name('user.accountConfirmation.verification');
+        Route::get('/search/post/{search?}', [PostController::class, 'search'])->name('user.post.search');
 
         Route::group(
             ['middleware' => 'PostExists'],
