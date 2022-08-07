@@ -204,6 +204,38 @@ class OfferController extends Controller
 
     /*
      * 
+     * refuse offer
+     * Customer acceptance of the Freelancer offer
+     * @return message by JsonResponse
+     * */
+    public function refuseOffer($id)
+    {
+        try {
+
+            $offer = Offer::find($id);
+
+            $post = $offer->post;
+
+            $user = User::find(auth()->user()->id);
+
+            if ($post->user_id != $user->id) {
+                return $this->failed('ليس لديك الصلاحية برفض هذا العرض');
+            }
+
+            if ($offer->user_id == $user->id) {
+                return $this->failed('ليس بالامكان رفض عرضك');
+            }
+
+            $offer->delete();
+
+            return $this->success('تم رفض العرض بنجاح');
+        } catch (\Exception $e) {
+            return $this->failed($e->getMessage());
+        }
+    }
+
+    /*
+     * 
      * cancel accept offers 
      * Customer cancels acceptance of the Freelancer offer
      * The freelancer refused the customer's approval to my offer

@@ -95,6 +95,7 @@ Route::group(
 
         Route::get('/post/{id}/offers', [OfferController::class, 'getPostOffers'])->middleware('PostExists')->name('user.offers.get');
         Route::post('/offer/accept/{id}', [OfferController::class, 'acceptOffer'])->middleware(['OfferExists'])->name('user.offer.accept');
+        Route::delete('/offer/refuse/{id}', [OfferController::class, 'refuseOffer'])->middleware(['OfferExists'])->name('user.offer.refuse');
         Route::delete('/order/cancel/{id}', [OfferController::class, 'cancelOrder'])->middleware(['OrderExists'])->name('user.order.cancel');
         Route::post('/order/accept/{id}', [OfferController::class, 'acceptAcceptOffer'])->middleware(['OrderExists'])->name('user.order.accept');
         Route::post('/order/get', [OfferController::class, 'getOrders'])->name('user.orders.get');
