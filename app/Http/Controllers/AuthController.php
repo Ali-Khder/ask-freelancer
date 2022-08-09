@@ -114,7 +114,7 @@ class AuthController extends Controller
                 $user->cover_image = $image['path'];
             }
 
-            if ($request->get('type')) {
+            if ($request->get('type') == 0) {
                 $user->profissionName = $request->get('profissionName');
                 $user->speciality = $request->get('speciality');
                 if ($request->get('skills')) {
