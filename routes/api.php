@@ -14,6 +14,7 @@ use App\Http\Controllers\RolePermissionController;
 use App\Http\Controllers\ChargeController;
 use App\Http\Controllers\TestController;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\feedbackController;
 
 /*
 |--------------------------------------------------------------------------
@@ -109,6 +110,10 @@ Route::group(
 
         Route::post('/skill/{id}/check', [TestController::class, 'checkanswer'])->name('user.skill.check');
         Route::get('/skill/{id}/questions/get', [TestController::class, 'getquestions'])->name('user.skill.questions.get');
+
+        //feedbacks
+        Route::get('/feedbacks', [feedbackController::class, 'getForGuest']);
+        Route::post('/feedbacks', [feedbackController::class, 'feedback']);
     }
 );
 
@@ -124,6 +129,11 @@ Route::group(
     ],
     function () {
         $cms = '/CMS';
+
+        //feedbacks
+        Route::get($cms . '/feedbacks', [feedbackController::class, 'getAll'])->name('cms.feedbacks.get');
+        Route::post($cms . '/feedbacks/enable/{id}', [feedbackController::class, 'enable'])->name('cms.feedbacks.enable');
+        Route::post($cms . '/feedbacks/disable/{id}', [feedbackController::class, 'disable'])->name('cms.feedbacks.disable');
 
         Route::post($cms . '/ID documention/respone', [IdentityDocumentionController::class, 'ResponeIdentityDocumentation'])->name('cms.idDocumention.respone');
         Route::get($cms . '/ID documention/get', [IdentityDocumentionController::class, 'GetIdentityDocumentation'])->name('cms.idDocumention.get');
