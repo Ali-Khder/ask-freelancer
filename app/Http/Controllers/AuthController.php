@@ -87,7 +87,7 @@ class AuthController extends Controller
 
     public function account(Request $request)
     {
-        $validator = Validator::make($request->post(), [
+        $validator = Validator::make($request->all(), [
             'profissionName' => 'required|string|min:5',
             'speciality' => 'required|string|min:5',
             'bio' => 'string|min:5',

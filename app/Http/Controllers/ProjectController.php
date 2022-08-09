@@ -32,7 +32,7 @@ class ProjectController extends Controller
 
     public function create(Request $request)
     {
-        $validator = Validator::make($request->post(), [
+        $validator = Validator::make($request->all(), [
             'name' => 'required|string|min:5|max:32',
             'description' => 'required|string|min:5',
             'link' => 'string|min:25',
