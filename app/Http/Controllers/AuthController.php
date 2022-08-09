@@ -88,8 +88,8 @@ class AuthController extends Controller
     public function account(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'profissionName' => 'required|string|min:5',
-            'speciality' => 'required|string|min:5',
+            'profissionName' => 'string|min:5',
+            'speciality' => 'string|min:5',
             'bio' => 'string|min:5',
             'type' => 'required|integer|max:3',
             'birthday' => 'required|date|date_format:Y-m-d',
@@ -115,8 +115,12 @@ class AuthController extends Controller
             }
 
             if ($request->get('type') == 0) {
+                if($request->get('profissionName'))
                 $user->profissionName = $request->get('profissionName');
+
+                if($request->get('speciality'))
                 $user->speciality = $request->get('speciality');
+
                 if ($request->get('skills')) {
                     $skills = $request->get('skills');
                     for ($i = 0; $i < count($skills); $i++)
