@@ -15,6 +15,7 @@ use App\Http\Controllers\ChargeController;
 use App\Http\Controllers\TestController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\feedbackController;
+use App\Http\Controllers\NotificationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -114,6 +115,8 @@ Route::group(
         //feedbacks
         Route::get('/feedbacks', [feedbackController::class, 'getForGuest']);
         Route::post('/feedbacks', [feedbackController::class, 'feedback']);
+
+        Route::get('/notifications', [NotificationController::class, 'index']);
     }
 );
 
@@ -129,6 +132,8 @@ Route::group(
     ],
     function () {
         $cms = '/CMS';
+
+        Route::post($cms . '/notifications', [NotificationController::class, 'send'])->name('cms.notifications.send');
 
         //feedbacks
         Route::get($cms . '/feedbacks', [feedbackController::class, 'getAll'])->name('cms.feedbacks.get');

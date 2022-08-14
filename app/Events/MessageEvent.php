@@ -26,10 +26,10 @@ class MessageEvent implements ShouldBroadcast
         $this->message = $message;
     }
 
-    public function broadcastWith()
-    {
-        return $this->message;
-    }
+    // public function broadcastWith()
+    // {
+    //     return $this->message;
+    // }
 
     /**
      * Get the channels the event should broadcast on.
