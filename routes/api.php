@@ -106,6 +106,9 @@ Route::group(
         Route::delete('/order/cancel/{id}', [OfferController::class, 'cancelOrder'])->middleware(['OrderExists'])->name('user.order.cancel');
         Route::post('/order/accept/{id}', [OfferController::class, 'acceptAcceptOffer'])->middleware(['OrderExists'])->name('user.order.accept');
         Route::post('/order/get', [OfferController::class, 'getOrders'])->name('user.orders.get');
+        Route::post('/order/final/{id}', [OfferController::class, 'sendFinalService']);
+        Route::get('/order/final/{id}', [OfferController::class, 'getFinalService']);
+        Route::post('/order/success/{id}', [OfferController::class, 'succeessOrder']);
 
         Route::post('/ID documention/send', [IdentityDocumentionController::class, 'sendIdentityDocument'])->name('user.idDocumention.send');
 
@@ -133,6 +136,7 @@ Route::group(
     function () {
         $cms = '/CMS';
 
+        Route::get($cms . '/sales', [OfferController::class, 'getSales'])->name('cms.sales');
         Route::post($cms . '/notifications', [NotificationController::class, 'send'])->name('cms.notifications.send');
 
         //feedbacks

@@ -11,12 +11,15 @@ use App\Models\Post;
 use App\Models\Offer;
 use App\Models\User;
 use App\Models\Order;
+use App\Models\Sale;
 use App\Models\Wallet;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\File;
 
 class OfferController extends Controller
 {
     use Traits\ResponseTrait;
+    use Traits\ImageTrait;
 
     /*
      *
@@ -398,6 +401,12 @@ class OfferController extends Controller
         if ($validator->fails()) {
             return self::failed($validator->errors()->first());
         } else {
+            $mytime = Carbon::now()->format('Y-m-d');
+            $order = Order::find($id);
+
+            if ($mytime > $order->deliveryDate)
+                return $this->failed('لقد اجتزت المهلة المتفق عليها للأسف');
+
             if ($request->has('media')) {
                 $media = $request->file('media');
                 if ($media != null) {
@@ -408,13 +417,65 @@ class OfferController extends Controller
                         $media = $this->saveImage($file, 'final service', $i);
 
                         FinalService::create([
-                            'path' => $media['path'],
+                            'file' => $media['path'],
                             'order_id' => $id,
                         ]);
                     }
                 }
             }
-            return $this->success('تم إنشاءالمشروع');
+            return $this->success('تم إرسال ملفات المشروع');
         }
+    }
+
+    /*
+     *
+     * A customer get files of final service
+     * @return Json message
+     * */
+    public function getFinalService($id)
+    {
+        $serviceFiles = FinalService::where('order_id', $id)->get();
+        return $this->success('ملفات المشروع', $serviceFiles);
+    }
+
+    /*
+     *
+     * A customer suucess the order
+     * @return Json message
+     * */
+    public function succeessOrder($id)
+    {
+        $order = Order::find($id);
+        if ($order === null)
+            return $this->failed('لا يوجد طلب');
+
+        $wallet = Wallet::where('user_id', $order->freelancer_id)->first();
+        if ($wallet === null) {
+            return $this->failed('لا يوجد محفظة بنكية للمستقبل');
+        } else {
+            $amount = $wallet->amount;
+
+            Sale::create([
+                'amount' => $order->price * 0.1
+            ]);
+            $wallet->amount  = $amount + ($order->price * 0.9);
+            $wallet->save();
+            $order->delete();
+        }
+        return $this->success('تم إنهاء العملية بنجاح');
+    }
+
+    public function getSales()
+    {
+        $now = Carbon::now();
+        $salesYear = Sale::whereYear('created_at', '=', $now->year)->sum('amount');
+        $salesMonth = Sale::whereMonth('created_at', '=', $now->month)->sum('amount');
+        $salesDay = Sale::whereDay('created_at', '=', $now->day)->sum('amount');
+        $response = [
+            'day' => $salesDay,
+            'month' => $salesMonth,
+            'year' => $salesYear
+        ];
+        return $this->success('الأرباح', $response);
     }
 }
