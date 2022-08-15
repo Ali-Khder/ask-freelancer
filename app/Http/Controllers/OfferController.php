@@ -4,12 +4,14 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Traits;
+use App\Models\FinalService;
 use App\Models\MediaPost;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Post;
 use App\Models\Offer;
 use App\Models\User;
 use App\Models\Order;
+use App\Models\Wallet;
 use Illuminate\Support\Facades\File;
 
 class OfferController extends Controller
@@ -17,7 +19,7 @@ class OfferController extends Controller
     use Traits\ResponseTrait;
 
     /*
-     * 
+     *
      * create Offer
      * Create a user Offer of the post on the database
      * @return message by JsonResponse
@@ -65,7 +67,7 @@ class OfferController extends Controller
     }
 
     /*
-     * 
+     *
      * edit Offer
      * edit a user Offer of the post on the database
      * @return message by JsonResponse
@@ -115,7 +117,7 @@ class OfferController extends Controller
     }
 
     /*
-     * 
+     *
      * delete Offer
      * delete a user Offer of the post on the database
      * @return message by JsonResponse
@@ -133,8 +135,8 @@ class OfferController extends Controller
     }
 
     /*
-     * 
-     * get Post Offers 
+     *
+     * get Post Offers
      * Get all id post offers
      * @return Data by JsonResponse : array of offers
      * */
@@ -157,7 +159,7 @@ class OfferController extends Controller
     }
 
     /*
-     * 
+     *
      * accept offer
      * Customer acceptance of the Freelancer offer
      * @return message by JsonResponse
@@ -174,6 +176,13 @@ class OfferController extends Controller
 
             $user = User::find(auth()->user()->id);
 
+            $wallet = Wallet::where('user_id', auth()->user()->id)->first();
+            if ($wallet === null) {
+                return $this->failed('ليس لديك محفظة بنكية');
+            } else {
+                if ($wallet->amount - $offer->price < 0)
+                    return $this->failed('ليس لديك مايكفي في المحفظة، الرجاء الشحن');
+            }
 
             if ($order != null) {
                 return $this->failed('يوحد عرض مقبول مسبقاً');
@@ -203,7 +212,7 @@ class OfferController extends Controller
     }
 
     /*
-     * 
+     *
      * refuse offer
      * Customer acceptance of the Freelancer offer
      * @return message by JsonResponse
@@ -235,8 +244,8 @@ class OfferController extends Controller
     }
 
     /*
-     * 
-     * cancel accept offers 
+     *
+     * cancel accept offers
      * Customer cancels acceptance of the Freelancer offer
      * The freelancer refused the customer's approval to my offer
      * @return message by JsonResponse
@@ -259,6 +268,15 @@ class OfferController extends Controller
 
             $order->delete();
 
+            $wallet = Wallet::where('user_id', $order->user_id)->first();
+            if ($wallet === null) {
+                return $this->failed('ليس لديك محفظة بنكية');
+            } else {
+                $amount = $wallet->amount;
+                $wallet->amount  = $amount + $order->price;
+                $wallet->save();
+            }
+
             return $this->success('تم إلغاء قبول العرض');
         } catch (\Exception $e) {
             return $this->failed($e->getMessage());
@@ -266,7 +284,7 @@ class OfferController extends Controller
     }
 
     /*
-     * 
+     *
      * get orders
      * @return Data by JsonResponse : array of offers
      * */
@@ -301,8 +319,8 @@ class OfferController extends Controller
     }
 
     /*
-     * 
-     * accept accept offers 
+     *
+     * accept accept offers
      * The freelancer accepted the customer's approval to my offer
      * @return message by JsonResponse
      * */
@@ -316,6 +334,20 @@ class OfferController extends Controller
 
             if ($order->freelancer_id != $user->id) {
                 return $this->failed('ليس لديك الصلاحية بالموافقة على قبول العرض');
+            }
+
+            $walletFreelancer = Wallet::where('user_id', auth()->user()->id)->first();
+            if ($walletFreelancer === null) {
+                return $this->failed('ليس لديك محفظة بنكية');
+            }
+
+            $wallet = Wallet::where('user_id', $order->user_id)->first();
+            if ($wallet === null) {
+                return $this->failed('الزبون ليس لديه محفظة بنكية');
+            } else {
+                $amount = $wallet->amount;
+                $wallet->amount  = $amount - $order->price;
+                $wallet->save();
             }
 
             $post = $order->post;
@@ -348,6 +380,41 @@ class OfferController extends Controller
             return $this->success('تمت الموافقة على قبول العرض');
         } catch (\Exception $e) {
             return $this->failed($e->getMessage());
+        }
+    }
+
+    /*
+     *
+     * A freelancer sends files of final service
+     * @return Json message
+     * */
+    public function sendFinalService(Request $request, $id)
+    {
+        $validator = Validator::make($request->all(), [
+            'media' => 'array',
+            'media.*' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return self::failed($validator->errors()->first());
+        } else {
+            if ($request->has('media')) {
+                $media = $request->file('media');
+                if ($media != null) {
+                    $i = 0;
+                    foreach ($media as $file) {
+
+                        $i++;
+                        $media = $this->saveImage($file, 'final service', $i);
+
+                        FinalService::create([
+                            'path' => $media['path'],
+                            'order_id' => $id,
+                        ]);
+                    }
+                }
+            }
+            return $this->success('تم إنشاءالمشروع');
         }
     }
 }

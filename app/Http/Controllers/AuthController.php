@@ -39,6 +39,7 @@ class AuthController extends Controller
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
                 'type' => 0,
+                'fcm_token' => $request->fcm_token,
             ]);
 
             config(['auth.guards.user-api.provider' => 'user']);
@@ -73,6 +74,8 @@ class AuthController extends Controller
 
                 $user = User::find(Auth::guard('user')->user()->id);
                 $token = $user->createToken('MyApp', ['user'])->accessToken;
+                $user->fcm_token = $request->fcm_token;
+                $user->save();
 
                 $response = [
                     'user' => $user,
@@ -115,11 +118,11 @@ class AuthController extends Controller
             }
 
             if ($request->get('type') == 0) {
-                if($request->get('profissionName'))
-                $user->profissionName = $request->get('profissionName');
+                if ($request->get('profissionName'))
+                    $user->profissionName = $request->get('profissionName');
 
-                if($request->get('speciality'))
-                $user->speciality = $request->get('speciality');
+                if ($request->get('speciality'))
+                    $user->speciality = $request->get('speciality');
 
                 if ($request->get('skills')) {
                     $skills = $request->get('skills');
