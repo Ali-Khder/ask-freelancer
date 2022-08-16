@@ -161,5 +161,7 @@ Route::group(
         Route::post($cms . '/test/question/{id}', [TestController::class, 'editQuestion'])->middleware(['QuestionExists'])->name('cms.question.update');
         Route::post($cms . '/test/answer/{id}', [TestController::class, 'editAnswer'])->middleware(['AnswerExists'])->name('cms.answer.update');
         Route::get($cms . '/category/{id}/questions/get', [TestController::class, 'gettest'])->name('cms.category.questions.get');
+
+        Route::delete($cms . '/orders/delete', [OfferController::class, 'deleteOrders'])->name('cms.orders.delete');
     }
 );
