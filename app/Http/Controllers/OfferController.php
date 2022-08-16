@@ -386,6 +386,34 @@ class OfferController extends Controller
         }
     }
 
+        /*
+     * 
+     * delete orders 
+     * @return message by JsonResponse
+     * */
+    public function deleteOrders()
+    {
+        try {
+
+            $orders = Order::where('deliveryDate', '<', Carbon::now()->format('Y-m-d'))->get();
+
+            foreach ($orders as $order) {
+                if($order->post_id == null){
+                    $wallet = Wallet::where('user_id', $order->user_id)->first();
+                    if ($wallet != null) {
+                        $amount = $wallet->amount;
+                        $wallet->amount  = $amount + $order->price;
+                        $wallet->save();
+                    }
+                }
+                $order->delete();
+            }
+
+            return $this->success('تم حذف جميع الطلبات الغير منجزة قبل الوقت المحدد');
+        } catch (\Exception $e) {
+            return $this->failed($e->getMessage());
+        }
+        
     /*
      *
      * A freelancer sends files of final service

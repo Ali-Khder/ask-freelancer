@@ -53,20 +53,23 @@ class TestController extends Controller
                     'question' => $onequestion['question'],
                     'category_id' => $id,
                 ]);
-
-                foreach ($onequestion['faultanswers'] as $faultanswer) {
+                $rand = rand(0,(count($onequestion['faultanswers'])-1));
+                $correctAnswer_id = 0;
+                foreach ($onequestion['faultanswers'] as $i=>$faultanswer) {
+                    if($rand == $i){
+                        $answer = Answer::create([
+                            'answer' => $onequestion['correctanswer'],
+                            'question_id' => $question->id,
+                        ]);
+                        $correctAnswer_id = $answer->id;
+                    }
                     Answer::create([
                         'answer' => $faultanswer['answer'],
                         'question_id' => $question->id,
                     ]);
                 }
 
-                $answer = Answer::create([
-                    'answer' => $onequestion['correctanswer'],
-                    'question_id' => $question->id,
-                ]);
-
-                $question->correctAnswer_id = $answer->id;
+                $question->correctAnswer_id = $correctAnswer_id;
                 $question->save();
             }
 
