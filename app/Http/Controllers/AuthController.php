@@ -144,7 +144,7 @@ class AuthController extends Controller
         $skills = DB::table('skills')
             ->join('categories', 'categories.id', '=', 'skills.category_id')
             ->where('user_id', auth()->user()->id)
-            ->select('categories.id', 'categories.name')
+            ->select('categories.id', 'categories.name', 'skills.rate')
             ->get();
         $response = [
             'user' => $user,
