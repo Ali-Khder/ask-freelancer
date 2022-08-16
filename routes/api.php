@@ -136,6 +136,7 @@ Route::group(
     function () {
         $cms = '/CMS';
 
+        Route::get($cms . '/charge', [ChargeController::class, 'getCharges']);
         Route::get($cms . '/sales', [OfferController::class, 'getSales'])->name('cms.sales');
         Route::post($cms . '/notifications', [NotificationController::class, 'send'])->name('cms.notifications.send');
 

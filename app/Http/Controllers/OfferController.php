@@ -403,6 +403,8 @@ class OfferController extends Controller
         } else {
             $mytime = Carbon::now()->format('Y-m-d');
             $order = Order::find($id);
+            if($order === null)
+            return $this->failed('الطلب غير موجود');
 
             if ($mytime > $order->deliveryDate)
                 return $this->failed('لقد اجتزت المهلة المتفق عليها للأسف');

@@ -15,7 +15,7 @@ class WalletCharge extends Model
         'wallet_id',
         'difference',
         'new_amount',
-        'pre_amount'
+        'pre_mount'
     ];
 
     public function getCreatedAtAttribute($value)
