@@ -386,9 +386,9 @@ class OfferController extends Controller
         }
     }
 
-        /*
-     * 
-     * delete orders 
+    /*
+     *
+     * delete orders
      * @return message by JsonResponse
      * */
     public function deleteOrders()
@@ -398,7 +398,7 @@ class OfferController extends Controller
             $orders = Order::where('deliveryDate', '<', Carbon::now()->format('Y-m-d'))->get();
 
             foreach ($orders as $order) {
-                if($order->post_id == null){
+                if ($order->post_id == null) {
                     $wallet = Wallet::where('user_id', $order->user_id)->first();
                     if ($wallet != null) {
                         $amount = $wallet->amount;
@@ -413,7 +413,8 @@ class OfferController extends Controller
         } catch (\Exception $e) {
             return $this->failed($e->getMessage());
         }
-        
+    }
+
     /*
      *
      * A freelancer sends files of final service
@@ -431,8 +432,8 @@ class OfferController extends Controller
         } else {
             $mytime = Carbon::now()->format('Y-m-d');
             $order = Order::find($id);
-            if($order === null)
-            return $this->failed('الطلب غير موجود');
+            if ($order === null)
+                return $this->failed('الطلب غير موجود');
 
             if ($mytime > $order->deliveryDate)
                 return $this->failed('لقد اجتزت المهلة المتفق عليها للأسف');
@@ -465,7 +466,11 @@ class OfferController extends Controller
     public function getFinalService($id)
     {
         $serviceFiles = FinalService::where('order_id', $id)->get();
-        return $this->success('ملفات المشروع', $serviceFiles);
+        $response = [
+            'order_id' => $id,
+            'files' => $serviceFiles
+        ];
+        return $this->success('ملفات المشروع', $response);
     }
 
     /*
