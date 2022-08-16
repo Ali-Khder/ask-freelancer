@@ -63,7 +63,15 @@ class ChargeController extends Controller
 
     public function getCharges()
     {
-        $charges = WalletCharge::paginate(10);
+        $charges = WalletCharge::join('users', 'users.id', '=', 'wallet_charges.user_id')
+            ->select(
+                'wallet_charges.difference',
+                'wallet_charges.pre_mount',
+                'wallet_charges.new_amount',
+                'users.first_name',
+                'users.last_name'
+            )
+            ->paginate(10);
         return $this->success('charges log', $charges);
     }
 }
