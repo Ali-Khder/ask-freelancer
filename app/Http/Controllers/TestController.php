@@ -81,7 +81,7 @@ class TestController extends Controller
     }
 
     /*
-     * 
+     *
      * delete test
      * delete a category test on the database
      * @return message by JsonResponse
@@ -118,7 +118,7 @@ class TestController extends Controller
     }
 
     /*
-     * 
+     *
      * edit question
      * edit a question on the database
      * @return message by JsonResponse
@@ -160,7 +160,7 @@ class TestController extends Controller
     }
 
     /*
-     * 
+     *
      * edit answer
      * edit a answer on the database
      * @return message by JsonResponse
@@ -192,7 +192,7 @@ class TestController extends Controller
     }
 
     /*
-     * 
+     *
      * check answer
      * Check the user's answers with the correct answers of the test conducted by the user
      * give the experience the percentage of the user's correct answers
@@ -247,7 +247,7 @@ class TestController extends Controller
     }
 
     /*
-     * 
+     *
      * get questions
      * returns test questions for a skill
      * @@return Data by JsonResponse : array of questions

@@ -32,6 +32,7 @@ class User extends Authenticatable
         'cover_image',
         'is_confirmed',
         'is_documented',
+        'fcm_token'
     ];
 
     protected $attributes=[

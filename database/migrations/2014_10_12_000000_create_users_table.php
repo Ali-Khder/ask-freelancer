@@ -29,6 +29,7 @@ return new class extends Migration
             $table->string('cover_image')->nullable();
             $table->boolean('is_confirmed');
             $table->boolean('is_documented');
+            $table->text('fcm_token')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

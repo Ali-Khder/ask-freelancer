@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Traits;
+use App\Models\Category;
 use App\Models\MediaPost;
 use App\Models\PostCategory;
 use Illuminate\Support\Facades\Validator;
@@ -15,6 +16,30 @@ class PostController extends Controller
 {
     use Traits\ResponseTrait;
     use Traits\ImageTrait;
+
+    public function search($search)
+    {
+        $posts = Post::join('users', 'users.id', '=', 'posts.user_id')
+            ->where('posts.body', 'like', "%{$search}%")
+            ->orWhere('users.first_name', 'like', "%{$search}%")
+            ->orWhere('users.last_name', 'like', "%{$search}%")
+            ->orderBy('posts.created_at', 'desc')
+            ->get();
+
+        foreach ($posts as $post) {
+
+            $post->user;
+
+            $post->mediaposts;
+
+            $postcategories = $post->postcategories;
+
+            foreach ($postcategories as $postcategory) {
+                $postcategory->category;
+            }
+        }
+        return $this->success('المشاريع', $posts);
+    }
 
     /*
      *
@@ -71,6 +96,7 @@ class PostController extends Controller
                     'user_id' => $user['id'],
                     'price' => $request->price,
                     'deliveryDate' => $request->deliveryDate,
+                    'type' => 2,
                 ]);
             }
 
@@ -335,9 +361,9 @@ class PostController extends Controller
             $posts = Post::where('type', 1)->orderBy('created_at', 'desc')->get();
 
             foreach ($posts as $post) {
-                
+
                 $post->user;
-                
+
                 $post->mediaposts;
 
                 $post->offers;
@@ -365,7 +391,7 @@ class PostController extends Controller
     {
         try {
 
-            $posts = Post::where('type', 0)->orderBy('created_at', 'desc')->get();
+            $posts = Post::where('type', 2)->orderBy('created_at', 'desc')->get();
 
             foreach ($posts as $post) {
 

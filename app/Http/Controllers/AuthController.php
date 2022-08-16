@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\PreviousProject;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
@@ -38,6 +39,7 @@ class AuthController extends Controller
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
                 'type' => 0,
+                'fcm_token' => $request->fcm_token,
             ]);
 
             config(['auth.guards.user-api.provider' => 'user']);
@@ -72,9 +74,11 @@ class AuthController extends Controller
 
                 $user = User::find(Auth::guard('user')->user()->id);
                 $token = $user->createToken('MyApp', ['user'])->accessToken;
+                $user->fcm_token = $request->fcm_token;
+                $user->save();
 
                 $response = [
-                    'user' => $data,
+                    'user' => $user,
                     'token' => $token
                 ];
                 $message = 'تم تسجيل الدخول';
@@ -86,9 +90,9 @@ class AuthController extends Controller
 
     public function account(Request $request)
     {
-        $validator = Validator::make($request->post(), [
-            'profissionName' => 'required|string|min:5',
-            'speciality' => 'required|string|min:5',
+        $validator = Validator::make($request->all(), [
+            'profissionName' => 'string|min:5',
+            'speciality' => 'string|min:5',
             'bio' => 'string|min:5',
             'type' => 'required|integer|max:3',
             'birthday' => 'required|date|date_format:Y-m-d',
@@ -104,11 +108,8 @@ class AuthController extends Controller
             $user = User::find(auth()->user()->id);
             $user->birthday = $request->get('birthday');
             $user->phone_number = $request->get('phone_number');
-            $user->profissionName = $request->get('profissionName');
             $user->bio = $request->has('bio') ? $request->get('bio') : '';
-            $user->speciality = $request->get('speciality');
             $user->type = $request->get('type');
-            $skills = $request->get('skills');
 
             if ($request->cover) {
                 $cover = $request->file('cover');
@@ -116,28 +117,55 @@ class AuthController extends Controller
                 $user->cover_image = $image['path'];
             }
 
-            if ($request->skills)
-                for ($i = 0; $i < count($skills); $i++)
-                    Skill::create([
-                        'user_id' => auth()->user()->id,
-                        'category_id' => $skills[$i],
-                    ]);
+            if ($request->get('type') == 0) {
+                if ($request->get('profissionName'))
+                    $user->profissionName = $request->get('profissionName');
+
+                if ($request->get('speciality'))
+                    $user->speciality = $request->get('speciality');
+
+                if ($request->get('skills')) {
+                    $skills = $request->get('skills');
+                    for ($i = 0; $i < count($skills); $i++)
+                        Skill::create([
+                            'user_id' => auth()->user()->id,
+                            'category_id' => $skills[$i],
+                        ]);
+                }
+            }
             $user->save();
             return $this->success('تم إعداد الحساب', $user);
         }
     }
 
-    public function get_profile()
+    public function get_my_profile()
     {
         $user = User::find(auth()->user()->id);
         $skills = DB::table('skills')
             ->join('categories', 'categories.id', '=', 'skills.category_id')
             ->where('user_id', auth()->user()->id)
-            ->select('categories.id', 'categories.name')
+            ->select('categories.id', 'categories.name', 'skills.rate')
             ->get();
         $response = [
             'user' => $user,
             'skills' => $skills
+        ];
+        return $this->success('معلومات حسابي', $response);
+    }
+
+    public function get_user_profile($id)
+    {
+        $user = User::find($id);
+        $skills = DB::table('skills')
+            ->join('categories', 'categories.id', '=', 'skills.category_id')
+            ->where('user_id', $id)
+            ->select('categories.id', 'categories.name', 'skills.rate')
+            ->get();
+        $projects = PreviousProject::where('user_id', $id)->get();
+        $response = [
+            'user' => $user,
+            'skills' => $skills,
+            'projects' => $projects
         ];
         return $this->success('معلومات حسابي', $response);
     }

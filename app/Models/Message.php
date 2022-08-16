@@ -11,7 +11,6 @@ class Message extends BaseModel
     protected $fillable = [
         'body',
         'room_id',
-        'user_id',
-        'room_id',
+        'user_id'
     ];
 }

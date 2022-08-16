@@ -13,6 +13,19 @@ class ChatController extends Controller
 {
     use ResponseTrait;
 
+    public function getRoomId($id)
+    {
+        $myRoom = ChatRoom::where('sender_id', auth()->user()->id)
+            ->where('receiver_id', $id)
+            ->orWhere('receiver_id', auth()->user()->id)
+            ->where('sender_id', $id)
+            ->first();
+
+        if ($myRoom === null)
+            return $this->failed('لا يوجد دردشة بينكما بعد، أبدأ الآن');
+        return $this->success('الدردشة', $myRoom);
+    }//end of function
+
     //getting my messages for a conversation
     public function index($id)
     {
@@ -54,7 +67,7 @@ class ChatController extends Controller
             ]);
 
             broadcast(new MessageEvent($message))->toOthers();
-            return $this->success('Sending success');
+            return $this->success('تم الارسال بنجاح');
         }
     }//end of sendMessage
 }

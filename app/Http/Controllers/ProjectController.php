@@ -16,12 +16,23 @@ class ProjectController extends Controller
 
     public function index()
     {
-        return $this->success('المشاريع', PreviousProject::all());
+        return $this->success(
+            'المشاريع',
+            PreviousProject::where('user_id', auth()->user()->id)->get()
+        );
+    }
+
+    public function userProjects($id)
+    {
+        return $this->success(
+            'المشاريع',
+            PreviousProject::where('user_id', $id)->get()
+        );
     }
 
     public function create(Request $request)
     {
-        $validator = Validator::make($request->post(), [
+        $validator = Validator::make($request->all(), [
             'name' => 'required|string|min:5|max:32',
             'description' => 'required|string|min:5',
             'link' => 'string|min:25',

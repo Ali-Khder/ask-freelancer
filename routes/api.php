@@ -14,6 +14,8 @@ use App\Http\Controllers\RolePermissionController;
 use App\Http\Controllers\ChargeController;
 use App\Http\Controllers\TestController;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\feedbackController;
+use App\Http\Controllers\NotificationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -38,6 +40,7 @@ Route::group(
         ]
     ],
     function () {
+        Route::get('/room/{id}', [ChatController::class, 'getRoomId']);
         Route::post('/message/{id}', [ChatController::class, 'sendMessage']);
         Route::get('/message/{id}', [ChatController::class, 'index']);
 
@@ -46,16 +49,19 @@ Route::group(
         Route::get('/wallet', [ChargeController::class, 'getAmount']);
 
         Route::post('/account', [authController::class, 'account']);
-        Route::get('/profile', [authController::class, 'get_profile']);
+        Route::get('/profile', [authController::class, 'get_my_profile']);
+        Route::get('/profile/{id}', [authController::class, 'get_user_profile']);
         Route::post('/password/change', [authController::class, 'changePassword']);
         Route::post('/password/reset', [authController::class, 'passwordReset'])->name('user.password.reset');
         Route::post('/logout', [authController::class, 'logout']);
 
+        Route::post('/category/except', [CategoryController::class, 'getExceptCategory']);
         Route::get('/category/parents', [CategoryController::class, 'getParent']);
         Route::get('/category/children', [CategoryController::class, 'getChildren']);
         Route::get('/category/child/{id}', [CategoryController::class, 'getChild']);
 
         Route::get('/projects', [ProjectController::class, 'index']);
+        Route::get('/{id}/projects', [ProjectController::class, 'userProjects']);
         Route::post('/projects', [ProjectController::class, 'create']);
         Route::get('/projects/{id}', [ProjectController::class, 'show']);
         Route::post('/projects/{id}', [ProjectController::class, 'update']);
@@ -63,6 +69,7 @@ Route::group(
 
         Route::post('/account confirmation/mail', [authController::class, 'sendConfirmationMail'])->name('user.accountConfirmation.mail');
         Route::post('/account confirmation/verification', [authController::class, 'verification'])->name('user.accountConfirmation.verification');
+        Route::get('/search/post/{search?}', [PostController::class, 'search'])->name('user.post.search');
 
         Route::group(
             ['middleware' => 'PostExists'],
@@ -99,11 +106,20 @@ Route::group(
         Route::delete('/order/cancel/{id}', [OfferController::class, 'cancelOrder'])->middleware(['OrderExists'])->name('user.order.cancel');
         Route::post('/order/accept/{id}', [OfferController::class, 'acceptAcceptOffer'])->middleware(['OrderExists'])->name('user.order.accept');
         Route::post('/order/get', [OfferController::class, 'getOrders'])->name('user.orders.get');
+        Route::post('/order/final/{id}', [OfferController::class, 'sendFinalService']);
+        Route::get('/order/final/{id}', [OfferController::class, 'getFinalService']);
+        Route::post('/order/success/{id}', [OfferController::class, 'succeessOrder']);
 
         Route::post('/ID documention/send', [IdentityDocumentionController::class, 'sendIdentityDocument'])->name('user.idDocumention.send');
 
         Route::post('/skill/{id}/check', [TestController::class, 'checkanswer'])->name('user.skill.check');
         Route::get('/skill/{id}/questions/get', [TestController::class, 'getquestions'])->name('user.skill.questions.get');
+
+        //feedbacks
+        Route::get('/feedbacks', [feedbackController::class, 'getForGuest']);
+        Route::post('/feedbacks', [feedbackController::class, 'feedback']);
+
+        Route::get('/notifications', [NotificationController::class, 'index']);
     }
 );
 
@@ -119,6 +135,15 @@ Route::group(
     ],
     function () {
         $cms = '/CMS';
+
+        Route::get($cms . '/charge', [ChargeController::class, 'getCharges']);
+        Route::get($cms . '/sales', [OfferController::class, 'getSales'])->name('cms.sales');
+        Route::post($cms . '/notifications', [NotificationController::class, 'send'])->name('cms.notifications.send');
+
+        //feedbacks
+        Route::get($cms . '/feedbacks', [feedbackController::class, 'getAll'])->name('cms.feedbacks.get');
+        Route::post($cms . '/feedbacks/enable/{id}', [feedbackController::class, 'enable'])->name('cms.feedbacks.enable');
+        Route::post($cms . '/feedbacks/disable/{id}', [feedbackController::class, 'disable'])->name('cms.feedbacks.disable');
 
         Route::post($cms . '/ID documention/respone', [IdentityDocumentionController::class, 'ResponeIdentityDocumentation'])->name('cms.idDocumention.respone');
         Route::get($cms . '/ID documention/get', [IdentityDocumentionController::class, 'GetIdentityDocumentation'])->name('cms.idDocumention.get');
